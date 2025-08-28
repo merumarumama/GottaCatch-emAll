@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Trading System - Flask Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #ff0000;
+            --secondary: #3b4cca;
+            --accent: #ce72d6ec;
+            --light: #e2baba;
+            --dark: #2c2c2c;
+            --success: #4caf50;
+            --warning: #bba424;
+            --danger: #f44336;
+        }
+        
+        body {
+            background-color: #000000;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .logo i {
+            color: var(--accent);
+            font-size: 2rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 12px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover, nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-balance {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent);
+            color: var(--dark);
+        }
+        
+        .btn-primary:hover {
+            background-color: #59cf35;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1fr;
+            gap: 20px;
+            padding: 30px 0;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+        
+        .sidebar-section h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .filter-options {
+            list-style: none;
+        }
+        
+        .filter-options li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-options input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        
+        /* Card Styles */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-img {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+        }
+        
+        .card-img img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        .card-details {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .rarity-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .rarity-normal {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .rarity-golden {
+            background-color: #ffd700;
+            color: #856404;
+        }
+        
+        .rarity-holographic {
+            background: linear-gradient(45deg, #6f42c1, #007bff);
+            color: white;
+        }
+        
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        /* Chat Sidebar */
+        .chat-sidebar {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .chat-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .chat-tab {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #e9ecef;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .chat-tab.active {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+        
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #ced4da;
+        }
+        
+        /* Auction Section */
+        .auction-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .auction-timer {
+            background-color: var(--secondary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        /* Battle Section */
+        .battle-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .battle-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .battle-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #ced4da;
+            font-size: 1rem;
+        }
+        
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-connected {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .status-disconnected {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 2fr;
+            }
+            
+            .chat-sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-dragon"></i>
+                    <h1>Gotta Trade 'Em All</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Home</a></li>
+                        <li><a href="#">My Collection</a></li>
+                        <li><a href="#">Auctions</a></li>
+                        <li><a href="#">Battles</a></li>
+                        <li><a href="#">Trades</a></li>
+                        <li><a href="#">Events</a></li>
+                    </ul>
+                </nav>
+                <div class="user-actions">
+                    <div class="user-info">
+                        <i class="fas fa-coins" style="color: var(--accent);"></i>
+                        <div class="user-balance">$245.75</div>
+                    </div>
+                    <button class="btn btn-primary"><i class="fas fa-user"></i> AshKetchum</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="main-content">
+            <!-- Left Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Filters</h3>
+                    <ul class="filter-options">
+                        <li>
+                            <input type="checkbox" id="filter-normal" checked>
+                            <label for="filter-normal">Normal Cards</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="filter-golden" checked>
+                            <label for="filter-golden">Golden Cards</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="filter-holographic" checked>
+                            <label for="filter-holographic">Holographic</label>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Card Type</h3>
+                    <ul class="filter-options">
+                        <li>
+                            <input type="checkbox" id="type-electric" checked>
+                            <label for="type-electric">Electric</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="type-fire" checked>
+                            <label for="type-fire">Fire</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="type-water" checked>
+                            <label for="type-water">Water</label>
+                        </li>
+                        <li>
+                            <input type="checkbox" id="type-psychic" checked>
+                            <label for="type-psychic">Psychic</label>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>Wishlist</h3>
+                    <p>Your wishlist is empty</p>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                        <i class="fas fa-plus"></i> Add Cards
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Center Content -->
+            <div class="content-center">
+                <!-- Auction Section -->
+                <div class="auction-section">
+                    <div class="section-header">
+                        <h2>Live Auctions</h2>
+                        <div class="auction-timer">
+                            <i class="fas fa-clock"></i> 02:45:12
+                        </div>
+                    </div>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="https://assets.pokemon.com/assets/cms2/img/cards/web/SV/SV_EN_1.png" alt="Charizard">
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Charizard</h3>
+                                <span class="rarity-badge rarity-holographic">Holographic</span>
+                                <p class="card-details">Fire · HP 150 · Stage 2</p>
+                                <div class="card-actions">
+                                    <div class="card-price">$87.50</div>
+                                    <button class="btn btn-primary">Bid Now</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="https://assets.pokemon.com/assets/cms2/img/cards/web/SWSH/SWSH_EN_TG10.png" alt="Pikachu">
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Pikachu</h3>
+                                <span class="rarity-badge rarity-golden">Golden</span>
+                                <p class="card-details">Electric · HP 70 · Basic</p>
+                                <div class="card-actions">
+                                    <div class="card-price">$42.00</div>
+                                    <button class="btn btn-primary">Bid Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trade Suggestions -->
+                <div class="auction-section">
+                    <div class="section-header">
+                        <h2>Trade Suggestions</h2>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="https://assets.pokemon.com/assets/cms2/img/cards/web/SV/SV_EN_4.png" alt="Blastoise">
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Blastoise</h3>
+                                <span class="rarity-badge rarity-normal">Normal</span>
+                                <p class="card-details">Water · HP 160 · Stage 2</p>
+                                <div class="card-actions">
+                                    <button class="btn btn-primary">Offer Trade</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-img">
+                                <img src="https://assets.pokemon.com/assets/cms2/img/cards/web/SV/SV_EN_24.png" alt="Mewtwo">
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Mewtwo</h3>
+                                <span class="rarity-badge rarity-holographic">Holographic</span>
+                                <p class="card-details">Psychic · HP 120 · Basic</p>
+                                <div class="card-actions">
+                                    <button class="btn btn-primary">Offer Trade</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Battle Section -->
+                <div class="battle-section">
+                    <div class="section-header">
+                        <h2>Ongoing Battles</h2>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> New Battle
+                        </button>
+                    </div>
+                    
+                    <div class="battle-card">
+                        <img src="https://assets.pokemon.com/assets/cms2/img/cards/web/SWSH/SWSH_EN_TG10.png" alt="Pikachu">
+                        <div class="battle-info">
+                            <h3>Pikachu vs. Eevee</h3>
+                            <p>Bet Amount: $25.00</p>
+                            <p>Time Left: 15:32</p>
+                        </div>
+                        <button class="btn btn-primary">Place Bet</button>
+                    </div>
+                    
+                    <div class="battle-card">
+                        <img src="https://assets.pokemon.com/assets/cms2/img/cards/web/SV/SV_EN_1.png" alt="Charizard">
+                        <div class="battle-info">
+                            <h3>Charizard vs. Blastoise</h3>
+                            <p>Bet Amount: $50.00</p>
+                            <p>Time Left: 08:17</p>
+                        </div>
+                        <button class="btn btn-primary">Place Bet</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Sidebar - Chat -->
+            <div class="chat-sidebar">
+                <div class="chat-header">
+                    <h3>Chat</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                
+                <div class="chat-tabs">
+                    <div class="chat-tab active">Global</div>
+                    <div class="chat-tab">Trades</div>
+                    <div class="chat-tab">Battles</div>
+                </div>
+                
+                <div class="chat-messages">
+                    <div class="message">
+                        <div class="message-sender">MistyWaterflower:</div>
+                        <div class="message-content">Looking to trade my holographic Gyarados for a strong Electric type!</div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-sender">Brock:</div>
+                        <div class="message-content">I have a Raichu if you're interested</div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-sender">TeamRocket:</div>
+                        <div class="message-content">Prepare for trouble! And make it double!</div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-sender">PokemonMaster:</div>
+                        <div class="message-content">Who's participating in the tournament this weekend?</div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" placeholder="Type your message...">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Status Indicator -->
+    <div id="connectionStatus" class="connection-status status-disconnected">
+        <i class="fas fa-plug"></i>
+        <span>Disconnected from Backend</span>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" placeholder="Your email">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Your password">
+            </div>
+            <button class="btn btn-primary" style="width: 100%;">Login</button>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:5000/api'; // Change this to your Flask server URL
+        
+        // Simple interactivity for the frontend
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check backend connection
+            checkBackendConnection();
+            
+            // Modal functionality
+            const modal = document.getElementById('login-modal');
+            const closeModalBtn = document.querySelector('.close-modal');
+            
+            // Open modal (for demonstration)
+            setTimeout(() => {
+                modal.style.display = 'flex';
+            }, 2000);
+            
+            // Close modal
+            closeModalBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Chat tabs functionality
+            const chatTabs = document.querySelectorAll('.chat-tab');
+            chatTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    chatTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+            });
+            
+            // Card filtering (simple implementation)
+            const filters = document.querySelectorAll('.filter-options input');
+            filters.forEach(filter => {
+                filter.addEventListener('change', () => {
+                    console.log('Filter changed:', filter.id);
+                    // In a real application, this would filter the cards
+                });
+            });
+            
+            // Load initial data from backend
+            loadInitialData();
+        });
+        
+        // Function to check backend connection
+        async function checkBackendConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    document.getElementById('connectionStatus').className = 'connection-status status-connected';
+                    document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-plug"></i><span>Connected to Backend</span>';
+                } else {
+                    throw new Error('Backend not responding properly');
+                }
+            } catch (error) {
+                console.error('Backend connection failed:', error);
+                document.getElementById('connectionStatus').className = 'connection-status status-disconnected';
+                document.getElementById('connectionStatus').innerHTML = '<i class="fas fa-plug"></i><span>Disconnected from Backend</span>';
+            }
+        }
+        
+        // Function to load initial data from backend
+        async function loadInitialData() {
+            try {
+                // Example: Load user data
+                const userResponse = await fetch(`${API_BASE_URL}/user/1`);
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    console.log('User data loaded:', userData);
+                    // Update UI with user data
+                }
+                
+                // Example: Load cards data
+                const cardsResponse = await fetch(`${API_BASE_URL}/cards`);
+                if (cardsResponse.ok) {
+                    const cardsData = await cardsResponse.json();
+                    console.log('Cards data loaded:', cardsData);
+                    // Update UI with cards data
+                }
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+            }
+        }
+        
+        // Example function to send a bid
+        async function placeBid(cardId, amount) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/auction/bid`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        cardId: cardId,
+                        amount: amount,
+                        userId: 1 // In a real app, this would come from authentication
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Bid placed successfully:', result);
+                    alert('Bid placed successfully!');
+                } else {
+                    throw new Error('Failed to place bid');
+                }
+            } catch (error) {
+                console.error('Error placing bid:', error);
+                alert('Error placing bid. Please try again.');
+            }
+        }
+        
+        // Example function to send a chat message
+        async function sendChatMessage(message, channel) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        channel: channel,
+                        userId: 1 // In a real app, this would come from authentication
+                    })
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Message sent successfully:', result);
+                    // Add message to chat UI
+                } else {
+                    throw new Error('Failed to send message');
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('Error sending message. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
