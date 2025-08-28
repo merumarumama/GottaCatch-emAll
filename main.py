@@ -26,6 +26,8 @@ def home():
 def dashboard():
     return render_template('dashboard.html')
 
+#@app.route
+
 if __name__ == '__main__':
     app.secret_key = "your_secret_key"
     app.run(debug=True)
