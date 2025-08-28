@@ -1,0 +1,118 @@
+DROP DATABASE GottaTradeEmAll;
+CREATE DATABASE GottaTradeEmAll;
+
+USE GottaTradeEmAll;
+
+CREATE TABLE User (
+         user_id INT AUTO_INCREMENT PRIMARY KEY,
+         name VARCHAR(100) NOT NULL,
+         email VARCHAR(100) UNIQUE NOT NULL,
+         password VARCHAR(255) NOT NULL,
+         balance DECIMAL(10,2) DEFAULT 0.00,
+         join_date DATE DEFAULT CURRENT_DATE,
+         chatuser_id INT,
+         FOREIGN KEY (chatuser_id) REFERENCES User(user_id)
+	 );
+
+CREATE TABLE Trade(
+	trade_id int auto_increment primary key, 
+	date datetime not null, 
+	status varchar(50) not null
+	);
+
+CREATE TABLE Card (
+         card_id INT AUTO_INCREMENT PRIMARY KEY,
+         type VARCHAR(50),
+         name VARCHAR(100),
+         value DECIMAL(10, 2),
+         normal BOOLEAN,
+         golden BOOLEAN,
+         holographic BOOLEAN,
+         owner_id INT,
+         trade_id INT,
+ 	FOREIGN KEY (owner_id) REFERENCES User(user_id),
+	FOREIGN KEY (trade_id) REFERENCES Trade(trade_id)
+	);
+
+CREATE TABLE Auction (
+         auction_id INT AUTO_INCREMENT PRIMARY KEY,
+         start_time DATETIME NOT NULL,
+         end_time DATETIME NOT NULL,
+         starting_bid DECIMAL(10, 2) NOT NULL,
+         user_id INT NOT NULL,
+         card_id int not null,
+         FOREIGN KEY (user_id) REFERENCES User(user_id),
+	 FOREIGN KEY (card_id) REFERENCES card(card_id)
+	);
+
+CREATE TABLE Battle (
+         battle_id INT PRIMARY KEY AUTO_INCREMENT,
+         amount DECIMAL(10,2) NOT NULL,
+         date DATETIME DEFAULT CURRENT_TIMESTAMP,
+	 winner INT NULL,
+	 loser INT NULL
+	);
+CREATE TABLE Reward (
+         reward_id INT PRIMARY KEY AUTO_INCREMENT,
+         value DECIMAL(10,2) NOT NULL,
+         Card BOOLEAN,
+         Token BOOLEAN
+     	);
+
+CREATE TABLE Challenge (
+         battle_id INT NOT NULL,
+         user_id INT NOT NULL,
+         card_id INT NOT NULL,
+         PRIMARY KEY (battle_id, user_id, card_id),
+         FOREIGN KEY (battle_id) REFERENCES battle(battle_id),
+         FOREIGN KEY (user_id) REFERENCES user(user_id),
+         FOREIGN KEY (card_id) REFERENCES card(card_id)
+	);
+
+CREATE TABLE Wishlist (
+         wishlist_id INT AUTO_INCREMENT,
+         user_id INT NOT NULL,
+         card_id INT NOT NULL,
+         date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+         PRIMARY KEY (wishlist_id),
+         FOREIGN KEY (user_id) REFERENCES user(user_id),
+         FOREIGN KEY (card_id) REFERENCES card(card_id)
+     );
+
+CREATE TABLE Bids_in (
+         user_id INT NOT NULL,
+         auction_id INT NOT NULL,
+         bid_amount DECIMAL(10,2) NOT NULL,
+         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+         PRIMARY KEY (user_id, auction_id),
+         FOREIGN KEY (user_id) REFERENCES User(user_id),
+         FOREIGN KEY (auction_id) REFERENCES Auction(Auction_id)
+     );
+
+CREATE TABLE wins (
+    user_id INT,
+    reward_id INT,
+    battle_id INT,
+    PRIMARY KEY (user_id, reward_id, battle_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (reward_id) REFERENCES reward(reward_id),
+    FOREIGN KEY (battle_id) REFERENCES battle(battle_id)
+);
+
+CREATE TABLE notify (
+    user_id INT,
+    auction_id INT,
+    wishlist_id INT,
+    PRIMARY KEY (user_id, auction_id, wishlist_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (auction_id) REFERENCES auction(auction_id),
+    FOREIGN KEY (wishlist_id) REFERENCES wishlist(wishlist_id)
+);
+
+CREATE TABLE participates_in (
+    trade_id INT,
+    user_id INT,
+    PRIMARY KEY (trade_id, user_id),
+    FOREIGN KEY (trade_id) REFERENCES trade(trade_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
