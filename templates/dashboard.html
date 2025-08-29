@@ -261,67 +261,69 @@
                     </div>
                 </div>
 
-           <!--  INSERT NEW STUFF AFTER THIS-->
+                <!--  INSERT NEW STUFF AFTER THIS-->
 
 
 
-        <!-- Battle Histories -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-trophy me-2"></i>My Battle Histories</h5>
-                {% for battle in battles %}
-                <div class="battle-item {% if battle.result == 'Win' %}battle-win{% else %}battle-loss{% endif %}">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <strong>Vs. {{ battle.opponent }}</strong> - Winner: {% if battle.result ==
-                            'Win' %}You{% else %}{{ battle.opponent }}{% endif %}
+                <!-- Battle Histories -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-trophy me-2"></i>My Battle Histories</h5>
+                        {% for battle in battles %}
+                        <div
+                            class="battle-item {% if battle.result == 'Win' %}battle-win{% else %}battle-loss{% endif %}">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Vs. {{ battle.opponent }}</strong> - Winner: {% if battle.result ==
+                                    'Win' %}You{% else %}{{ battle.opponent }}{% endif %}
+                                </div>
+                                <span
+                                    class="badge {% if battle.result == 'Win' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ battle.result }}
+                                </span>
+                            </div>
+                            <small>
+                                {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{
+                                battle.stake }}{% endif %} |
+                                {{ battle.date.strftime('%b %d, %Y') }}
+                            </small>
                         </div>
-                        <span class="badge {% if battle.result == 'Win' %}bg-success{% else %}bg-danger{% endif %}">
-                            {{ battle.result }}
-                        </span>
+                        {% endfor %}
+
+                        <div class="text-end mt-3">
+                            <form action="{{ url_for('battle_history') }}" method="get" class="text-end">
+                                <button type="submit" class="btn btn-primary btn-sm">View All Battles</button>
+                            </form>
+
+                        </div>
                     </div>
-                    <small>
-                        {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{
-                        battle.stake }}{% endif %} |
-                        {{ battle.date.strftime('%b %d, %Y') }}
-                    </small>
                 </div>
-                {% endfor %}
+            </div>
 
-                <div class="text-end mt-3">
-                    <form action="{{ url_for('battle_history') }}" method="get" class="text-end">
-                        <button type="submit" class="btn btn-primary btn-sm">View All Battles</button>
-                    </form>
-
+            <!-- Right Column -->
+            <div class="col-md-4">
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add New Card
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-exchange-alt me-2"></i>Start New Trade
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-gavel me-2"></i>Create Auction
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-fist-raised me-2"></i>Start Battle
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Right Column -->
-    <div class="col-md-4">
-        <!-- Quick Actions -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i>Add New Card
-                    </button>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-exchange-alt me-2"></i>Start New Trade
-                    </button>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-gavel me-2"></i>Create Auction
-                    </button>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-fist-raised me-2"></i>Start Battle
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
     </div>
 
     <!-- Bootstrap JS -->
