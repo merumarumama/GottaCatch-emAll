@@ -170,23 +170,21 @@ def battle_history():
     user_id = session['user_id']
     cursor = mysql.connection.cursor()
 
-    # Fetch all battles for this user
     cursor.execute("""
         SELECT 
-            b.battle_id,
-            b.date,
+            b.battle_id AS id,
             CASE
                 WHEN b.winner = %s THEN u_loser.name
                 ELSE u_winner.name
             END AS opponent,
+            b.date,
             CASE
                 WHEN b.winner = %s THEN 'Win'
                 ELSE 'Loss'
-            END AS result,
-            b.amount AS prize
+            END AS result
         FROM Battle b
-        JOIN Users u_winner ON u_winner.user_id = b.winner
-        JOIN Users u_loser ON u_loser.user_id = b.loser
+        JOIN Users u_winner ON b.winner = u_winner.user_id
+        JOIN Users u_loser ON b.loser = u_loser.user_id
         WHERE %s IN (b.winner, b.loser)
         ORDER BY b.date DESC
     """, (user_id, user_id, user_id))
@@ -194,6 +192,7 @@ def battle_history():
     battles = cursor.fetchall()
 
     return render_template('battle.html', battles=battles)
+
 
 
 
