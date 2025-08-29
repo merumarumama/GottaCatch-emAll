@@ -109,8 +109,40 @@ def dashboard():
         cursor.execute('SELECT COUNT(*) AS auction_count FROM Auction WHERE user_id = %s', (session['user_id'],))
         auctions = cursor.fetchone()['auction_count']
 
-        cursor.execute('SELECT COUNT(*) AS battle_count FROM Challenge WHERE user_id = %s', (session['user_id'],))
-        battles = cursor.fetchone()['battle_count']
+        # Fetch latest 5 battles for the dashboard
+        # Latest 5 battles for dashboard
+        cursor.execute("""
+            SELECT 
+                b.battle_id,
+                b.date,
+                CASE
+                    WHEN b.winner = %s THEN u_loser.name
+                    ELSE u_winner.name
+                END AS opponent,
+                CASE
+                    WHEN b.winner = %s THEN 'Win'
+                    ELSE 'Loss'
+                END AS result,
+                b.amount AS prize
+            FROM Battle b
+            JOIN Users u_winner ON u_winner.user_id = b.winner
+            JOIN Users u_loser ON u_loser.user_id = b.loser
+            WHERE %s IN (b.winner, b.loser)
+            ORDER BY b.date DESC
+            LIMIT 5
+        """, (session['user_id'], session['user_id'], session['user_id']))
+        battles = cursor.fetchall()
+
+
+        # Total battles count (separate query)
+        cursor.execute("""
+            SELECT COUNT(*) AS battle_count
+            FROM Battle
+            WHERE %s IN (winner, loser)
+        """, (session['user_id'],))
+        row = cursor.fetchone()
+        battles_count = row['battle_count'] if row else 0
+
 
         return render_template(
             'dashboard.html',
@@ -118,11 +150,50 @@ def dashboard():
             cards=cards,
             trades=trades,
             auctions=auctions,
-            battles=battles
+            battles=battles,
+            battles_count=battles_count
         )
+
+
     else:
         flash('Please log in first!', 'danger')
         return redirect(url_for('login'))
+
+
+
+@app.route('/battle-history')
+def battle_history():
+    if 'user_id' not in session:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    cursor = mysql.connection.cursor()
+
+    # Fetch all battles for this user
+    cursor.execute("""
+        SELECT 
+            b.battle_id,
+            b.date,
+            CASE
+                WHEN b.winner = %s THEN u_loser.name
+                ELSE u_winner.name
+            END AS opponent,
+            CASE
+                WHEN b.winner = %s THEN 'Win'
+                ELSE 'Loss'
+            END AS result,
+            b.amount AS prize
+        FROM Battle b
+        JOIN Users u_winner ON u_winner.user_id = b.winner
+        JOIN Users u_loser ON u_loser.user_id = b.loser
+        WHERE %s IN (b.winner, b.loser)
+        ORDER BY b.date DESC
+    """, (user_id, user_id, user_id))
+
+    battles = cursor.fetchall()
+
+    return render_template('battle.html', battles=battles)
 
 
 

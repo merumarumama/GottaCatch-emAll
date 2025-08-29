@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="en">
@@ -19,14 +20,14 @@
                     rgba(0, 0, 0, 0.1) 0%,
                     rgba(0, 0, 0, 0.1) 75%,
                     rgba(74, 20, 140, 0.1) 100%),
-                url("backgroundImageLogin.jpg");
+                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
             background-size: 100% 100%;
             background-repeat: repeat;
             background-attachment: fixed;
             background-blend-mode: overlay;
             min-height: 100vh;
             font-family: 'Courier New', monospace;
-            color: #ce72d6ec;
+            color: #f4f3f4ec;
         }
 
         .card {
@@ -45,16 +46,16 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            background: linear-gradient(135deg, #bd1a1a, #6e0e0e);
             border: none;
             color: #fff !important;
             font-weight: bold;
-            box-shadow: 0 2px 8px rgba(30, 136, 229, 0.6);
+            box-shadow: 0 2px 8px rgba(135, 46, 14, 0.6);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #64b5f6, #2196f3);
-            box-shadow: 0 3px 10px rgba(30, 136, 229, 0.8);
+            background: linear-gradient(135deg, #4bbd55, #0f8731);
+            box-shadow: 0 3px 10px rgba(30, 229, 60, 0.8);
         }
 
         a:hover {
@@ -86,10 +87,10 @@
         }
 
         .dashboard-header {
-            background: rgba(30, 60, 120, 0.7);
+            background: rgba(109, 24, 24, 0.7);
             padding: 15px 0;
             margin-bottom: 25px;
-            border-bottom: 2px solid rgba(173, 216, 230, 0.5);
+            border-bottom: 2px solid rgba(230, 173, 173, 0.5);
         }
 
         .stat-card {
@@ -109,11 +110,11 @@
         }
 
         .trade-item, .auction-item, .battle-item {
-            background: rgba(40, 80, 160, 0.4);
+            background: rgba(148, 36, 36, 0.4);
             border-radius: 5px;
             padding: 10px;
             margin-bottom: 10px;
-            border-left: 3px solid #42a5f5;
+            border-left: 3px solid #a21550;
         }
 
         .battle-win {
@@ -148,18 +149,18 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h2 class="mb-0">Trainer Dashboard</h2>
-                    <small>Welcome back, Ash!</small>
+                    <small>Welcome back, {{ user.name }}!</small>
                 </div>
                 <div class="col-md-6 text-end">
                     <div class="btn-group">
                         <button class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-coins me-1"></i> Balance: $245.75
+                            <i class="fas fa-coins me-1"></i> Balance: ${{ user.balance }}
                         </button>
                         <button class="btn btn-outline-light btn-sm position-relative">
                             <i class="fas fa-bell"></i>
                             <span class="notification-badge">3</span>
                         </button>
-                        <a href="frontend.html" class="btn btn-outline-light btn-sm">
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </div>
@@ -173,26 +174,26 @@
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">42</div>
+                    <div class="stat-number">{{ cards }}</div>
                     <div class="stat-label">Cards Owned</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">7</div>
+                    <div class="stat-number">{{ trades }}</div>
                     <div class="stat-label">Active Trades</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">3</div>
+                    <div class="stat-number">{{ auctions }}</div>
                     <div class="stat-label">Live Auctions</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">12-5</div>
-                    <div class="stat-label">Battle Record</div>
+                    <div class="stat-number">{{ battles }}</div>
+                    <div class="stat-label">Battles Participated</div>
                 </div>
             </div>
         </div>
@@ -323,6 +324,87 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Chat Panel (initially hidden) -->
+<div id="chatPanel" style="display: none; position: fixed; bottom: 20px; right: 20px; width: 300px; background: rgba(20, 40, 80, 0.9); border: 2px solid #dc143c; border-radius: 10px; z-index: 1000; backdrop-filter: blur(10px);">
+    <div class="chat-header" style="background: linear-gradient(135deg, #dc143c, #8b0000); padding: 10px; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: white; font-weight: bold;">Chat with <span id="chatUserName">User</span></span>
+        <button id="closeChat" style="background: none; border: none; color: white; cursor: pointer;">✕</button>
+    </div>
+    <div class="chat-messages" style="height: 200px; overflow-y: auto; padding: 10px; color: #e0f7fa;">
+        <div class="message">New conversation started</div>
+    </div>
+    <div class="chat-input" style="padding: 10px; display: flex;">
+        <input type="text" id="chatMessage" placeholder="Type your message..." style="flex: 1; padding: 8px; border: 1px solid rgba(173, 216, 230, 0.7); background: rgba(255, 255, 255, 0.8); color: #0d47a1; border-radius: 4px;">
+        <button id="sendMessage" style="margin-left: 5px; padding: 8px 12px; background: linear-gradient(135deg, #dc143c, #8b0000); border: none; color: white; border-radius: 4px; cursor: pointer;">Send</button>
+    </div>
+</div>
+
+<script>
+// Chat functionality - No history saved
+document.addEventListener('DOMContentLoaded', function() {
+    const chatPanel = document.getElementById('chatPanel');
+    const chatUserName = document.getElementById('chatUserName');
+    const closeChat = document.getElementById('closeChat');
+    const chatMessage = document.getElementById('chatMessage');
+    const sendMessage = document.getElementById('sendMessage');
+    const chatMessages = document.querySelector('.chat-messages');
+    
+    let currentChatUser = '';
+    
+    // Function to open chat with a user
+    function openChat(userName) {
+        currentChatUser = userName;
+        chatUserName.textContent = userName;
+        chatPanel.style.display = 'block';
+        // Always start with a fresh conversation
+        chatMessages.innerHTML = '<div class="message">New conversation with ' + userName + ' started</div>';
+        chatMessage.focus();
+    }
+    
+    // Close chat panel
+    closeChat.addEventListener('click', function() {
+        chatPanel.style.display = 'none';
+        // No need to save anything when closing
+    });
+    
+    // Send message
+    sendMessage.addEventListener('click', function() {
+        const message = chatMessage.value.trim();
+        if (message) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.textContent = 'You: ' + message;
+            messageElement.style.marginBottom = '5px';
+            chatMessages.appendChild(messageElement);
+            chatMessage.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // No storage - messages exist only in current session
+        }
+    });
+    
+    // Allow sending message with Enter key
+    chatMessage.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage.click();
+        }
+    });
+    
+    // Make the username in the header clickable
+    const userNameElement = document.querySelector('.dashboard-header h2 + small');
+    if (userNameElement) {
+        userNameElement.style.cursor = 'pointer';
+        userNameElement.style.textDecoration = 'underline';
+        userNameElement.addEventListener('click', function() {
+            openChat('Ash');
+        });
+    }
+    
+    // Example: You can also make other elements clickable for chat
+    // For future implementation with actual user lists
+});
+</script>
 </body>
 
 </html>

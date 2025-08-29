@@ -191,8 +191,9 @@
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">{{ battles }}</div>
+                    <div class="stat-number">{{ battles_count }}</div>
                     <div class="stat-label">Battles Participated</div>
+
                 </div>
             </div>
         </div>
@@ -285,35 +286,28 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-trophy me-2"></i>My Battle Histories</h5>
-                        <div class="battle-item battle-win">
+                        {% for battle in battles %}
+                        <div class="battle-item {% if battle.result == 'Win' %}battle-win{% else %}battle-loss{% endif %}">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <strong>Vs. Brock</strong> - Winner: You
+                                    <strong>Vs. {{ battle.opponent }}</strong> - Winner: {% if battle.result == 'Win' %}You{% else %}{{ battle.opponent }}{% endif %}
                                 </div>
-                                <span class="badge bg-success">Win</span>
+                                <span class="badge {% if battle.result == 'Win' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ battle.result }}
+                                </span>
                             </div>
-                            <small>Prize: $25 | Aug 29, 2023</small>
+                            <small>
+                                {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{ battle.stake }}{% endif %} | 
+                                {{ battle.date.strftime('%b %d, %Y') }}
+                            </small>
                         </div>
-                        <div class="battle-item battle-loss">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <strong>Vs. Misty</strong> - Winner: Misty
-                                </div>
-                                <span class="badge bg-danger">Loss</span>
-                            </div>
-                            <small>Stake: $15 | Aug 28, 2023</small>
-                        </div>
-                        <div class="battle-item battle-win">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <strong>Vs. Gary</strong> - Winner: You
-                                </div>
-                                <span class="badge bg-success">Win</span>
-                            </div>
-                            <small>Prize: $40 | Aug 27, 2023</small>
-                        </div>
+                        {% endfor %}
+
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">View All Battles</button>
+                            <form action="{{ url_for('battle_history') }}" method="get" class="text-end">
+                                <button type="submit" class="btn btn-primary btn-sm">View All Battles</button>
+                            </form>
+
                         </div>
                     </div>
                 </div>
