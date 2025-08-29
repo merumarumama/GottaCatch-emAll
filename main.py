@@ -143,9 +143,13 @@ def dashboard():
         row = cursor.fetchone()
         battles_count = row['battle_count'] if row else 0
 
+        # Fetch user info
+        cursor.execute('SELECT * FROM Users')
+        allusers = cursor.fetchall()
 
         return render_template(
             'dashboard.html',
+            allusers=allusers,
             user=user,
             cards=cards,
             trades=trades,
@@ -158,6 +162,7 @@ def dashboard():
     else:
         flash('Please log in first!', 'danger')
         return redirect(url_for('login'))
+
 
 
 @app.route('/battle-history')
