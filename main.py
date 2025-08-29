@@ -219,6 +219,37 @@ def battle_history():
     return render_template('battle.html', battles=battles, current_battle=current_battle)
 
 
+@app.route('/chatbox', methods=['GET', 'POST'])
+def chatbox():
+    if 'user_id' not in session:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor()
+    if request.method == 'POST' and 'message' in request.form:
+        message = request.form['message']
+        user_id = session['user_id']
+        # Insert new message into Chat table
+        cursor.execute(
+            'INSERT INTO Chat (user_id, message, timestamp) VALUES (%s, %s, NOW())',
+            (user_id, message)
+        )
+        mysql.connection.commit()
+        flash('Message sent!', 'success')
+        return redirect(url_for('chatbox'))
+
+    # Fetch last 50 messages
+    cursor.execute("""
+        SELECT c.message, c.timestamp, u.name
+        FROM Chat c
+        JOIN Users u ON c.user_id = u.user_id
+        ORDER BY c.timestamp DESC
+        LIMIT 50
+    """)
+    messages = cursor.fetchall()
+
+    return render_template('chatbox.html', messages=messages)
+
 
 
 
