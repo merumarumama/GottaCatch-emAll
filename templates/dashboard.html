@@ -37,6 +37,13 @@
             margin-bottom: 20px;
         }
 
+        .card-msg {
+            color: #bbdefb !important;
+            border: 1px solid rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
         .card-title,
         .form-label,
         a {
@@ -319,6 +326,21 @@
                             <button class="btn btn-primary">
                                 <i class="fas fa-fist-raised me-2"></i>Start Battle
                             </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- CHAT Stuffs Kichu ekta -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-envelope me-2"></i>Chat Box</h5>
+                        <div class="d-grid gap-2">
+                            {% for u in allusers %}
+                            <form style="margin-bottom: 12px;" action="{{ url_for('chatbox') }}" method="get">
+                                <div class="card-msg btn btn-primary btn-sm">
+                                    <div><i class="fas fa-envelope me-2"></i> {{ u.name }}</div>
+                                </div>
+                                {% endfor %}
+                            </form>
                         </div>
                     </div>
                 </div>
