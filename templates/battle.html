@@ -167,7 +167,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgb(255, 255, 255);
             overflow: hidden;
         }
 
@@ -276,10 +276,10 @@
                     <div class="col-md-4">
                         <p>Chosen Pokémon: {{ current_battle.user_pokemon|capitalize }}</p>
                         <div class="pokemon-box">
-                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ current_battle.user_pokemon|lower }}.png"
+                            <img src="https://img.pokemondb.net/artwork/avif/{{ current_battle.user_pokemon|lower }}.avif"
                                 alt="{{ current_battle.user_pokemon|capitalize }}"
-                                onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
-                        </div>
+                                onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
+                            </div>
                         <p class="mt-2">{{ current_battle.username }}</p>
                         <p>Score: {{ current_battle.user_score }}</p>
                     </div>
@@ -293,10 +293,9 @@
                     <div class="col-md-4">
                         <p>Chosen Pokémon: {{ current_battle.opponent_pokemon|capitalize }}</p>
                         <div class="pokemon-box">
-                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ current_battle.opponent_pokemon|lower }}.png"
+                            <img src="https://img.pokemondb.net/artwork/avif/{{ current_battle.opponent_pokemon|lower }}.avif"
                                 alt="{{ current_battle.opponent_pokemon|capitalize }}"
-                                onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/0.png';">
-
+                                onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
                         </div>
                         <p class="mt-2">{{ current_battle.opponent }}</p>
                         <p>Score: {{ current_battle.opponent_score }}</p>
