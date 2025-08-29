@@ -225,32 +225,23 @@ def chatbox():
         flash('Please log in first!', 'danger')
         return redirect(url_for('login'))
 
+    user_id = session['user_id']
+    recipient_id = request.args.get('recipient_id')
+
     cursor = mysql.connection.cursor()
-    if request.method == 'POST' and 'message' in request.form:
-        message = request.form['message']
-        user_id = session['user_id']
-        # Insert new message into Chat table
-        cursor.execute(
-            'INSERT INTO Chat (user_id, message, timestamp) VALUES (%s, %s, NOW())',
-            (user_id, message)
-        )
-        mysql.connection.commit()
-        flash('Message sent!', 'success')
-        return redirect(url_for('chatbox'))
+    user = None
+    recipient = None
 
-    # Fetch last 50 messages
-    cursor.execute("""
-        SELECT c.message, c.timestamp, u.name
-        FROM Chat c
-        JOIN Users u ON c.user_id = u.user_id
-        ORDER BY c.timestamp DESC
-        LIMIT 50
-    """)
-    messages = cursor.fetchall()
+    # Fetch current user info
+    cursor.execute('SELECT * FROM Users WHERE user_id = %s', (user_id,))
+    user = cursor.fetchone()
 
-    return render_template('chatbox.html', messages=messages)
+    # Fetch recipient info if provided
+    if recipient_id:
+        cursor.execute('SELECT * FROM Users WHERE user_id = %s', (recipient_id,))
+        recipient = cursor.fetchone()
 
-
+    return render_template('chatbox.html', user=user, recipient=recipient)
 
 
 @app.route("/start-battle", methods=["POST"])
