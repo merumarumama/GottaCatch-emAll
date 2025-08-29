@@ -103,7 +103,6 @@
 
 </head>
 
-<!-- EKHANE JUSTIFY SHORAILE UPORE JAY, AR ADD KORLE CENTER E THAAKE -->
 <body class="d-flex align-items-center justify-content-center vh-100 flex-column">
     <!-- Straight title -->
     <div class="title-container">
@@ -116,8 +115,8 @@
             <h3 class="card-title text-center mb-4">Login</h3>
             <form action="{{ url_for('login') }}" method="POST">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
