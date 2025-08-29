@@ -275,9 +275,11 @@
                             <button class="btn btn-primary">
                                 <i class="fas fa-gavel me-2"></i>Create Auction
                             </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-fist-raised me-2"></i>Start Battle
-                            </button>
+                            <form action="{{ url_for('start_battle') }}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-fist-raised me-2"></i>Start Battle
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

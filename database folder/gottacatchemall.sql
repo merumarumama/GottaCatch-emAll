@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 29, 2025 at 07:46 PM
+-- Generation Time: Aug 29, 2025 at 08:26 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,24 +47,25 @@ CREATE TABLE `battle` (
   `amount` decimal(10,2) NOT NULL,
   `date` datetime DEFAULT current_timestamp(),
   `winner` int(11) DEFAULT NULL,
-  `loser` int(11) DEFAULT NULL
+  `loser` int(11) DEFAULT NULL,
+  `status` enum('queued','ongoing','finished') DEFAULT 'queued'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `battle`
 --
 
-INSERT INTO `battle` (`battle_id`, `amount`, `date`, `winner`, `loser`) VALUES
-(1, 50.00, '2025-08-25 10:00:00', 1, 2),
-(2, 30.00, '2025-08-26 14:30:00', 3, 4),
-(3, 40.00, '2025-08-27 16:45:00', 2, 1),
-(4, 25.00, '2025-08-28 12:20:00', 7, 8),
-(5, 60.00, '2025-08-28 18:10:00', 9, 10),
-(6, 35.00, '2025-08-29 09:15:00', 4, 3),
-(7, 20.00, '2025-08-29 11:50:00', 1, 3),
-(8, 45.00, '2025-08-29 13:05:00', 8, 7),
-(9, 55.00, '2025-08-29 15:40:00', 10, 9),
-(10, 70.00, '2025-08-29 17:30:00', 2, 4);
+INSERT INTO `battle` (`battle_id`, `amount`, `date`, `winner`, `loser`, `status`) VALUES
+(1, 50.00, '2025-08-25 10:00:00', 1, 2, 'queued'),
+(2, 30.00, '2025-08-26 14:30:00', 3, 4, 'queued'),
+(3, 40.00, '2025-08-27 16:45:00', 2, 1, 'queued'),
+(4, 25.00, '2025-08-28 12:20:00', 7, 8, 'queued'),
+(5, 60.00, '2025-08-28 18:10:00', 9, 10, 'queued'),
+(6, 35.00, '2025-08-29 09:15:00', 4, 3, 'queued'),
+(7, 20.00, '2025-08-29 11:50:00', 1, 3, 'queued'),
+(8, 45.00, '2025-08-29 13:05:00', 8, 7, 'queued'),
+(9, 55.00, '2025-08-29 15:40:00', 10, 9, 'queued'),
+(10, 70.00, '2025-08-29 17:30:00', 2, 4, 'queued');
 
 -- --------------------------------------------------------
 

@@ -160,7 +160,6 @@ def dashboard():
         return redirect(url_for('login'))
 
 
-
 @app.route('/battle-history')
 def battle_history():
     if 'user_id' not in session:
@@ -168,30 +167,95 @@ def battle_history():
         return redirect(url_for('login'))
 
     user_id = session['user_id']
-    cursor = mysql.connection.cursor()
+    cursor = mysql.connection.cursor()  # <-- just use this
 
+    # Fetch ongoing/current battle for the user
     cursor.execute("""
-        SELECT 
-            b.battle_id AS id,
-            CASE
-                WHEN b.winner = %s THEN u_loser.name
-                ELSE u_winner.name
-            END AS opponent,
-            b.date,
-            CASE
-                WHEN b.winner = %s THEN 'Win'
-                ELSE 'Loss'
-            END AS result
+        SELECT b.battle_id,
+               u_winner.name AS winner_name, u_loser.name AS loser_name,
+               b.winner, b.loser, b.amount, b.date,
+               '' AS user_pokemon,
+               '' AS opponent_pokemon,
+               '' AS current_turn,
+               '' AS current_move,
+               0 AS user_score,
+               0 AS opponent_score
+        FROM Battle b
+        JOIN Users u_winner ON u_winner.user_id = b.winner
+        JOIN Users u_loser ON u_loser.user_id = b.loser
+        WHERE b.status='ongoing' AND %s IN (b.winner, b.loser)
+        ORDER BY b.date DESC
+        LIMIT 1
+    """, (user_id,))
+    current_battle = cursor.fetchone()
+
+    if current_battle:
+        if current_battle['winner'] == user_id:
+            current_battle['username'] = current_battle['winner_name']
+            current_battle['opponent'] = current_battle['loser_name']
+        else:
+            current_battle['username'] = current_battle['loser_name']
+            current_battle['opponent'] = current_battle['winner_name']
+
+    # Fetch battle history
+    cursor.execute("""
+        SELECT b.battle_id AS id,
+               CASE WHEN b.winner = %s THEN u_loser.name ELSE u_winner.name END AS opponent,
+               b.date,
+               CASE WHEN b.winner = %s THEN 'Win' ELSE 'Loss' END AS result
         FROM Battle b
         JOIN Users u_winner ON b.winner = u_winner.user_id
         JOIN Users u_loser ON b.loser = u_loser.user_id
         WHERE %s IN (b.winner, b.loser)
         ORDER BY b.date DESC
     """, (user_id, user_id, user_id))
-
     battles = cursor.fetchall()
 
-    return render_template('battle.html', battles=battles)
+    return render_template('battle.html', battles=battles, current_battle=current_battle)
+
+
+
+
+
+@app.route("/start-battle", methods=["POST"])
+def start_battle():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user_id = session["user_id"]
+    cursor = mysql.connection.cursor(dictionary=True)
+
+    # Check if a battle is waiting
+    cursor.execute("SELECT * FROM battle WHERE status='queued' LIMIT 1")
+    waiting_battle = cursor.fetchone()
+
+    if waiting_battle:
+        # Someone is waiting → update to ongoing
+        battle_id = waiting_battle["battle_id"]
+        cursor.execute("""
+            UPDATE battle
+            SET status='ongoing', start_time=%s, loser=%s
+            WHERE battle_id=%s
+        """, (datetime.now(), user_id, battle_id))
+        mysql.connection.commit()
+
+        # Load battle.html with current battle data
+        cursor.execute("SELECT * FROM battle WHERE battle_id=%s", (battle_id,))
+        battle = cursor.fetchone()
+        return render_template("battle.html", battle=battle)
+
+    else:
+        # No one waiting → create queued battle
+        cursor.execute("""
+            INSERT INTO battle (amount, date, winner, loser, status, start_time)
+            VALUES (%s, %s, NULL, %s, 'queued', %s)
+        """, (0, datetime.now(), user_id, datetime.now()))
+        mysql.connection.commit()
+        battle_id = cursor.lastrowid
+
+        cursor.execute("SELECT * FROM battle WHERE battle_id=%s", (battle_id,))
+        battle = cursor.fetchone()
+        return render_template("battle.html", battle=battle)
 
 
 
