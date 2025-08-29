@@ -1,5 +1,5 @@
-DROP DATABASE GottaTradeEmAll;
-CREATE DATABASE GottaTradeEmAll;
+DROP DATABASE GottaCatchemAll;
+CREATE DATABASE GottaCatchemAll;
 
 USE GottaTradeEmAll;
 
