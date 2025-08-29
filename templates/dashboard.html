@@ -14,12 +14,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background:
-                linear-gradient(to bottom,
-                    rgba(0, 0, 0, 0.1) 0%,
-                    rgba(0, 0, 0, 0.1) 75%,
-                    rgba(74, 20, 140, 0.1) 100%),
-                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
+            background: linear-gradient(to bottom,
+                rgba(0, 0, 0, 0.1) 0%,
+                rgba(0, 0, 0, 0.1) 75%,
+                rgba(74, 20, 140, 0.1) 100%),
+            url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
             background-size: 100% 100%;
             background-repeat: repeat;
             background-attachment: fixed;
@@ -108,7 +107,9 @@
             color: #bbdefb;
         }
 
-        .trade-item, .auction-item, .battle-item {
+        .trade-item,
+        .auction-item,
+        .battle-item {
             background: rgba(148, 36, 36, 0.4);
             border-radius: 5px;
             padding: 10px;
@@ -117,11 +118,13 @@
         }
 
         .battle-win {
-            border-left: 3px solid #4caf50; /* Green for wins */
+            border-left: 3px solid #4caf50;
+            /* Green for wins */
         }
 
         .battle-loss {
-            border-left: 3px solid #f44336; /* Red for losses */
+            border-left: 3px solid #f44336;
+            /* Red for losses */
         }
 
         .notification-badge {
@@ -257,62 +260,68 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Column -->
-            <div class="col-md-4">
-                <!-- Quick Actions -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Add New Card
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-exchange-alt me-2"></i>Start New Trade
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-gavel me-2"></i>Create Auction
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-fist-raised me-2"></i>Start Battle
-                            </button>
+           <!--  INSERT NEW STUFF AFTER THIS-->
+
+
+
+        <!-- Battle Histories -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-trophy me-2"></i>My Battle Histories</h5>
+                {% for battle in battles %}
+                <div class="battle-item {% if battle.result == 'Win' %}battle-win{% else %}battle-loss{% endif %}">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <strong>Vs. {{ battle.opponent }}</strong> - Winner: {% if battle.result ==
+                            'Win' %}You{% else %}{{ battle.opponent }}{% endif %}
                         </div>
+                        <span class="badge {% if battle.result == 'Win' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ battle.result }}
+                        </span>
                     </div>
+                    <small>
+                        {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{
+                        battle.stake }}{% endif %} |
+                        {{ battle.date.strftime('%b %d, %Y') }}
+                    </small>
                 </div>
+                {% endfor %}
 
-                <!-- Battle Histories -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-trophy me-2"></i>My Battle Histories</h5>
-                        {% for battle in battles %}
-                        <div class="battle-item {% if battle.result == 'Win' %}battle-win{% else %}battle-loss{% endif %}">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <strong>Vs. {{ battle.opponent }}</strong> - Winner: {% if battle.result == 'Win' %}You{% else %}{{ battle.opponent }}{% endif %}
-                                </div>
-                                <span class="badge {% if battle.result == 'Win' %}bg-success{% else %}bg-danger{% endif %}">
-                                    {{ battle.result }}
-                                </span>
-                            </div>
-                            <small>
-                                {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{ battle.stake }}{% endif %} | 
-                                {{ battle.date.strftime('%b %d, %Y') }}
-                            </small>
-                        </div>
-                        {% endfor %}
+                <div class="text-end mt-3">
+                    <form action="{{ url_for('battle_history') }}" method="get" class="text-end">
+                        <button type="submit" class="btn btn-primary btn-sm">View All Battles</button>
+                    </form>
 
-                        <div class="text-end mt-3">
-                            <form action="{{ url_for('battle_history') }}" method="get" class="text-end">
-                                <button type="submit" class="btn btn-primary btn-sm">View All Battles</button>
-                            </form>
-
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add New Card
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-exchange-alt me-2"></i>Start New Trade
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-gavel me-2"></i>Create Auction
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-fist-raised me-2"></i>Start Battle
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->
