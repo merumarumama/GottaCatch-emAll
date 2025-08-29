@@ -93,14 +93,37 @@ def register():
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' in session:
-        return '''
-        <body style="background-color:black; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
-            <h1>Dashboard</h1>
-        </body>
-        '''
+        cursor = mysql.connection.cursor()
+
+        # Fetch user info
+        cursor.execute('SELECT * FROM Users WHERE user_id = %s', (session['user_id'],))
+        user = cursor.fetchone()
+
+        # Example: count cards, trades, auctions, battles
+        cursor.execute('SELECT COUNT(*) AS card_count FROM Card WHERE owner_id = %s', (session['user_id'],))
+        cards = cursor.fetchone()['card_count']
+
+        cursor.execute('SELECT COUNT(*) AS trade_count FROM participates_in WHERE user_id = %s', (session['user_id'],))
+        trades = cursor.fetchone()['trade_count']
+
+        cursor.execute('SELECT COUNT(*) AS auction_count FROM Auction WHERE user_id = %s', (session['user_id'],))
+        auctions = cursor.fetchone()['auction_count']
+
+        cursor.execute('SELECT COUNT(*) AS battle_count FROM Challenge WHERE user_id = %s', (session['user_id'],))
+        battles = cursor.fetchone()['battle_count']
+
+        return render_template(
+            'dashboard.html',
+            user=user,
+            cards=cards,
+            trades=trades,
+            auctions=auctions,
+            battles=battles
+        )
     else:
         flash('Please log in first!', 'danger')
         return redirect(url_for('login'))
+
 
 
 #@app.route

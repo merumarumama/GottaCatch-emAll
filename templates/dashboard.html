@@ -19,7 +19,7 @@
                     rgba(0, 0, 0, 0.1) 0%,
                     rgba(0, 0, 0, 0.1) 75%,
                     rgba(74, 20, 140, 0.1) 100%),
-                url("backgroundImageLogin.jpg");
+                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
             background-size: 100% 100%;
             background-repeat: repeat;
             background-attachment: fixed;
@@ -148,12 +148,12 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h2 class="mb-0">Trainer Dashboard</h2>
-                    <small>Welcome back, Ash!</small>
+                    <small>Welcome back, {{ user.name }}!</small>
                 </div>
                 <div class="col-md-6 text-end">
                     <div class="btn-group">
                         <button class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-coins me-1"></i> Balance: $245.75
+                            <i class="fas fa-coins me-1"></i> Balance: ${{ user.balance }}
                         </button>
                         <button class="btn btn-outline-light btn-sm position-relative">
                             <i class="fas fa-bell"></i>
@@ -173,26 +173,26 @@
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">42</div>
+                    <div class="stat-number">{{ cards }}</div>
                     <div class="stat-label">Cards Owned</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">7</div>
+                    <div class="stat-number">{{ trades }}</div>
                     <div class="stat-label">Active Trades</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">3</div>
+                    <div class="stat-number">{{ auctions }}</div>
                     <div class="stat-label">Live Auctions</div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">12-5</div>
-                    <div class="stat-label">Battle Record</div>
+                    <div class="stat-number">{{ battles }}</div>
+                    <div class="stat-label">Battles Participated</div>
                 </div>
             </div>
         </div>
