@@ -496,30 +496,47 @@ def chatbox():
         flash('Please log in first!', 'danger')
         return redirect(url_for('login'))
 
+    user_id = session['user_id']
+    recipient_id = request.args.get('recipient_id')
+
     cursor = mysql.connection.cursor()
-    if request.method == 'POST' and 'message' in request.form:
-        message = request.form['message']
-        user_id = session['user_id']
-        # Insert new message into Chat table
-        cursor.execute(
-            'INSERT INTO Chat (user_id, message, timestamp) VALUES (%s, %s, NOW())',
-            (user_id, message)
-        )
+    user = None
+    recipient = None
+
+    # Fetch current user info
+    cursor.execute('SELECT * FROM Users WHERE user_id = %s', (user_id,))
+    user = cursor.fetchone()
+
+    # Fetch recipient info if provided
+    if recipient_id:
+        cursor.execute('SELECT * FROM Users WHERE user_id = %s', (recipient_id,))
+        recipient = cursor.fetchone()
+
+    return render_template('chatbox.html', user=user, recipient=recipient)
+
+
+
+@app.route('/load-sql')
+def load_sql():
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("DROP DATABASE IF EXISTS gottacatchemall")
+        cursor.execute("CREATE DATABASE gottacatchemall")
+        cursor.execute("USE gottacatchemall")
+
+        with open('./database folder/gottacatchemall.sql', 'r') as f:
+            sql_commands = f.read().split(';')  # split commands by semicolon
+
+        for command in sql_commands:
+            if command.strip():
+                cursor.execute(command)
+
         mysql.connection.commit()
-        flash('Message sent!', 'success')
-        return redirect(url_for('chatbox'))
-
-    # Fetch last 50 messages
-    cursor.execute("""
-        SELECT c.message, c.timestamp, u.name
-        FROM Chat c
-        JOIN Users u ON c.user_id = u.user_id
-        ORDER BY c.timestamp DESC
-        LIMIT 50
-    """)
-    messages = cursor.fetchall()
-
-    return render_template('chatbox.html', messages=messages)
+        cursor.close()
+        flash("SQL file loaded successfully!", "success")
+    except Exception as e:
+        flash(f"Error loading SQL file: {e}", "danger")
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.secret_key = "your_secret_key"
