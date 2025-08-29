@@ -294,9 +294,27 @@ def start_battle():
         return render_template("battle.html", battle=battle)
 
 
+@app.route('/load-sql')
+def load_sql():
+    try:
+        cursor = mysql.connection.cursor()
+        cursor.execute("DROP DATABASE IF EXISTS gottacatchemall")
+        cursor.execute("CREATE DATABASE gottacatchemall")
+        cursor.execute("USE gottacatchemall")
 
+        with open('./database folder/gottacatchemall.sql', 'r') as f:
+            sql_commands = f.read().split(';')  # split commands by semicolon
 
-#@app.route
+        for command in sql_commands:
+            if command.strip():
+                cursor.execute(command)
+
+        mysql.connection.commit()
+        cursor.close()
+        flash("SQL file loaded successfully!", "success")
+    except Exception as e:
+        flash(f"Error loading SQL file: {e}", "danger")
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.secret_key = "your_secret_key"
