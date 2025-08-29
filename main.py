@@ -515,46 +515,6 @@ def chatbox():
     return render_template('chatbox.html', user=user, recipient=recipient)
 
 
-@app.route("/start-battle", methods=["POST"])
-def start_battle():
-    if "user_id" not in session:
-        return redirect("/login")
-
-    user_id = session["user_id"]
-    cursor = mysql.connection.cursor(dictionary=True)
-
-    # Check if a battle is waiting
-    cursor.execute("SELECT * FROM battle WHERE status='queued' LIMIT 1")
-    waiting_battle = cursor.fetchone()
-
-    if waiting_battle:
-        # Someone is waiting → update to ongoing
-        battle_id = waiting_battle["battle_id"]
-        cursor.execute("""
-            UPDATE battle
-            SET status='ongoing', start_time=%s, loser=%s
-            WHERE battle_id=%s
-        """, (datetime.now(), user_id, battle_id))
-        mysql.connection.commit()
-
-        # Load battle.html with current battle data
-        cursor.execute("SELECT * FROM battle WHERE battle_id=%s", (battle_id,))
-        battle = cursor.fetchone()
-        return render_template("battle.html", battle=battle)
-
-    else:
-        # No one waiting → create queued battle
-        cursor.execute("""
-            INSERT INTO battle (amount, date, winner, loser, status, start_time)
-            VALUES (%s, %s, NULL, %s, 'queued', %s)
-        """, (0, datetime.now(), user_id, datetime.now()))
-        mysql.connection.commit()
-        battle_id = cursor.lastrowid
-
-        cursor.execute("SELECT * FROM battle WHERE battle_id=%s", (battle_id,))
-        battle = cursor.fetchone()
-        return render_template("battle.html", battle=battle)
-
 
 @app.route('/load-sql')
 def load_sql():
