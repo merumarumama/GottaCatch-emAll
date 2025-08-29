@@ -16,7 +16,7 @@
                     rgba(0, 0, 0, 0.1) 0%,
                     rgba(0, 0, 0, 0.1) 75%,
                     rgba(74, 20, 140, 0.1) 100%),
-                url("backgroundImageLogin.jpg");
+                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
             background-size: auto;
             background-repeat: repeat;
             background-attachment: fixed;
@@ -116,8 +116,8 @@
             <h3 class="card-title text-center mb-4">Login</h3>
             <form action="{{ url_for('login') }}" method="POST">
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
@@ -126,7 +126,8 @@
                 <button type="submit" class="btn btn-primary w-100">Login</button>
             </form>
             <div class="text-center mt-3">
-                <a href="register.html">Don't have an account? Register</a>
+                <a href="{{ url_for('register') }}">Don't have an account? Register</a>
+
             </div>
         </div>
     </div>

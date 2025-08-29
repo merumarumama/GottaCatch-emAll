@@ -19,12 +19,69 @@ mysql = MySQL(app)
 # Root route
 @app.route('/')
 def home():
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
-# Dashboard route
-@app.route('/dashboard', methods=['GET', 'POST'])
+# Login route
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+        email = request.form['email']
+        password = request.form['password']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Users WHERE email = %s AND password = %s', (email, password))
+        account = cursor.fetchone()
+
+        if account:
+            session['user_id'] = account['user_id']  # <-- correct key
+            session['name'] = account['name']        # store name if needed
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email/password!', 'danger')
+    return render_template('login.html')
+
+
+
+# Register route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST' and 'name' in request.form and 'email' in request.form and 'password' in request.form:
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM Users WHERE email = %s', (email,))
+        account = cursor.fetchone()
+
+        if account:
+            flash('Account already exists!', 'warning')
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            flash('Invalid email address!', 'danger')
+        elif password != confirm_password:
+            flash('Passwords do not match!', 'danger')
+        else:
+            cursor.execute('INSERT INTO Users (name, email, password) VALUES (%s, %s, %s)', (name, email, password))
+            mysql.connection.commit()
+            flash('You have successfully registered!', 'success')
+            return redirect(url_for('login'))
+    return render_template('register.html')
+
+
+@app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    if 'user_id' in session:
+        return '''
+        <body style="background-color:black; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
+            <h1>Dashboard</h1>
+        </body>
+        '''
+    else:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+
 
 #@app.route
 
