@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
+from datetime import date
 
 app = Flask(__name__)
 
@@ -22,6 +23,8 @@ def home():
     return redirect(url_for('login'))
 
 # Login route
+from datetime import date
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
@@ -33,13 +36,30 @@ def login():
         account = cursor.fetchone()
 
         if account:
-            session['user_id'] = account['user_id']  # <-- correct key
-            session['name'] = account['name']        # store name if needed
+            session['user_id'] = account['user_id']
+            session['name'] = account['name']
+
+            # --- Daily reward logic ---
+            today = date.today()
+            if not account.get('last_login') or account['last_login'] < today:
+                daily_reward = 100.00
+                new_balance = float(account['balance']) + daily_reward
+
+                # Update balance and last_login in DB
+                cursor.execute(
+                    'UPDATE Users SET balance = %s, last_login = %s WHERE user_id = %s',
+                    (new_balance, today, account['user_id'])
+                )
+                mysql.connection.commit()
+                flash(f'You received {daily_reward} coins as a daily login reward!', 'success')
+
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email/password!', 'danger')
+
     return render_template('login.html')
+
 
 
 

@@ -11,6 +11,7 @@ CREATE TABLE Users (
          balance DECIMAL(10,2) DEFAULT 0.00,
          join_date DATE DEFAULT CURRENT_DATE,
          chatuser_id INT,
+         last_login DATE,
          FOREIGN KEY (chatuser_id) REFERENCES User(user_id)
 	 );
 
