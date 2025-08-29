@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 29, 2025 at 08:26 PM
+-- Generation Time: Aug 29, 2025 at 11:24 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -48,24 +48,29 @@ CREATE TABLE `battle` (
   `date` datetime DEFAULT current_timestamp(),
   `winner` int(11) DEFAULT NULL,
   `loser` int(11) DEFAULT NULL,
-  `status` enum('queued','ongoing','finished') DEFAULT 'queued'
+  `status` enum('ongoing','finished') DEFAULT 'ongoing',
+  `player1_score` int(11) DEFAULT 0,
+  `player2_score` int(11) DEFAULT 0,
+  `current_turn` int(11) DEFAULT NULL,
+  `current_move` varchar(50) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `battle`
 --
 
-INSERT INTO `battle` (`battle_id`, `amount`, `date`, `winner`, `loser`, `status`) VALUES
-(1, 50.00, '2025-08-25 10:00:00', 1, 2, 'queued'),
-(2, 30.00, '2025-08-26 14:30:00', 3, 4, 'queued'),
-(3, 40.00, '2025-08-27 16:45:00', 2, 1, 'queued'),
-(4, 25.00, '2025-08-28 12:20:00', 7, 8, 'queued'),
-(5, 60.00, '2025-08-28 18:10:00', 9, 10, 'queued'),
-(6, 35.00, '2025-08-29 09:15:00', 4, 3, 'queued'),
-(7, 20.00, '2025-08-29 11:50:00', 1, 3, 'queued'),
-(8, 45.00, '2025-08-29 13:05:00', 8, 7, 'queued'),
-(9, 55.00, '2025-08-29 15:40:00', 10, 9, 'queued'),
-(10, 70.00, '2025-08-29 17:30:00', 2, 4, 'queued');
+INSERT INTO `battle` (`battle_id`, `amount`, `date`, `winner`, `loser`, `status`, `player1_score`, `player2_score`, `current_turn`, `current_move`, `updated_at`) VALUES
+(1, 50.00, '2025-08-25 10:00:00', 1, 2, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(2, 30.00, '2025-08-26 14:30:00', 3, 4, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(3, 40.00, '2025-08-27 16:45:00', 2, 1, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(4, 25.00, '2025-08-28 12:20:00', 7, 8, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(5, 60.00, '2025-08-28 18:10:00', 9, 10, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(6, 35.00, '2025-08-29 09:15:00', 4, 3, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(7, 20.00, '2025-08-29 11:50:00', 1, 3, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(8, 45.00, '2025-08-29 13:05:00', 8, 7, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(9, 55.00, '2025-08-29 15:40:00', 10, 9, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
+(10, 70.00, '2025-08-30 02:33:58', 10, 9, 'ongoing', 65, 30, 9, 'attack', '2025-08-29 20:57:17');
 
 -- --------------------------------------------------------
 
@@ -98,6 +103,52 @@ CREATE TABLE `card` (
   `trade_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `card`
+--
+
+INSERT INTO `card` (`card_id`, `type`, `name`, `value`, `normal`, `golden`, `holographic`, `owner_id`, `trade_id`) VALUES
+(1, 'Pokemon', 'Pikachu', 25.00, 1, 0, 0, 2, NULL),
+(2, 'Pokemon', 'Charizard', 85.00, 0, 0, 1, 2, NULL),
+(3, 'Pokemon', 'Bulbasaur', 15.00, 1, 0, 0, 2, NULL),
+(4, 'Pokemon', 'Squirtle', 18.00, 1, 0, 0, 2, NULL),
+(5, 'Pokemon', 'Jigglypuff', 12.00, 1, 0, 0, 2, NULL),
+(6, 'Pokemon', 'Eevee', 20.00, 1, 0, 0, 3, NULL),
+(7, 'Pokemon', 'Vaporeon', 45.00, 0, 1, 0, 3, NULL),
+(8, 'Pokemon', 'Jolteon', 42.00, 0, 1, 0, 3, NULL),
+(9, 'Pokemon', 'Flareon', 40.00, 0, 1, 0, 3, NULL),
+(10, 'Pokemon', 'Mewtwo', 95.00, 0, 0, 1, 3, NULL),
+(11, 'Pokemon', 'Snorlax', 55.00, 1, 0, 0, 4, NULL),
+(12, 'Pokemon', 'Gyarados', 48.00, 1, 0, 0, 4, NULL),
+(13, 'Pokemon', 'Dragonite', 75.00, 0, 0, 1, 4, NULL),
+(14, 'Pokemon', 'Gengar', 38.00, 1, 0, 0, 4, NULL),
+(15, 'Pokemon', 'Alakazam', 42.00, 0, 1, 0, 4, NULL),
+(16, 'Pokemon', 'Machop', 15.00, 1, 0, 0, 7, NULL),
+(17, 'Pokemon', 'Geodude', 12.00, 1, 0, 0, 7, NULL),
+(18, 'Pokemon', 'Abra', 18.00, 1, 0, 0, 7, NULL),
+(19, 'Pokemon', 'Growlithe', 22.00, 1, 0, 0, 7, NULL),
+(20, 'Pokemon', 'Ponyta', 20.00, 1, 0, 0, 7, NULL),
+(21, 'Pokemon', 'Magikarp', 5.00, 1, 0, 0, 8, NULL),
+(22, 'Pokemon', 'Psyduck', 16.00, 1, 0, 0, 8, NULL),
+(23, 'Pokemon', 'Poliwag', 14.00, 1, 0, 0, 8, NULL),
+(24, 'Pokemon', 'Tentacool', 15.00, 1, 0, 0, 8, NULL),
+(25, 'Pokemon', 'Slowpoke', 17.00, 1, 0, 0, 8, NULL),
+(26, 'Pokemon', 'Magnemite', 16.00, 1, 0, 0, 9, NULL),
+(27, 'Pokemon', 'Voltorb', 15.00, 1, 0, 0, 9, NULL),
+(28, 'Pokemon', 'Electrode', 35.00, 0, 1, 0, 9, NULL),
+(29, 'Pokemon', 'Cubone', 18.00, 1, 0, 0, 9, NULL),
+(30, 'Pokemon', 'Marowak', 38.00, 0, 1, 0, 9, NULL),
+(31, 'Pokemon', 'Hitmonlee', 45.00, 1, 0, 0, 10, NULL),
+(32, 'Pokemon', 'Hitmonchan', 45.00, 1, 0, 0, 10, NULL),
+(33, 'Pokemon', 'Lickitung', 25.00, 1, 0, 0, 10, NULL),
+(34, 'Pokemon', 'Koffing', 16.00, 1, 0, 0, 10, NULL),
+(35, 'Pokemon', 'Rhyhorn', 22.00, 1, 0, 0, 10, NULL),
+(36, 'Pokemon', 'Charmander', 20.00, 1, 0, 0, 1, NULL),
+(37, 'Pokemon', 'Charmeleon', 45.00, 0, 1, 0, 1, NULL),
+(38, 'Pokemon', 'Charizard', 85.00, 0, 0, 1, 1, NULL),
+(39, 'Pokemon', 'Vulpix', 18.00, 1, 0, 0, 1, NULL),
+(40, 'Pokemon', 'Ninetales', 55.00, 0, 1, 0, 1, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -107,8 +158,17 @@ CREATE TABLE `card` (
 CREATE TABLE `challenge` (
   `battle_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `card_id` int(11) NOT NULL
+  `card_id` int(11) NOT NULL,
+  `status` enum('queued','match_found') DEFAULT 'queued'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `challenge`
+--
+
+INSERT INTO `challenge` (`battle_id`, `user_id`, `card_id`, `status`) VALUES
+(10, 9, 26, 'match_found'),
+(10, 10, 31, 'match_found');
 
 -- --------------------------------------------------------
 
@@ -188,7 +248,7 @@ INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `balance`, `join_da
 (7, 'alu', 'alu@gmail.com', 'helloalu', 100.00, '2025-08-29', NULL, '2025-08-29 08:19:17', '2025-08-29'),
 (8, 'maomao', 'mao@gmail.com', 'alumao', 100.00, '2025-08-29', NULL, '2025-08-29 15:53:40', '2025-08-29'),
 (9, 'saihan', 'saihan@gmail.com', 'saihanposa', 100.00, '2025-08-29', NULL, '2025-08-29 16:22:36', '2025-08-29'),
-(10, 'mehu', 'mehu@gmail.com', 'mehu', 100.00, '2025-08-29', NULL, '2025-08-29 17:34:37', '2025-08-29');
+(10, 'mehu', 'mehu@gmail.com', 'mehu', 200.00, '2025-08-29', NULL, '2025-08-29 20:18:42', '2025-08-30');
 
 -- --------------------------------------------------------
 
@@ -231,7 +291,8 @@ ALTER TABLE `auction`
 -- Indexes for table `battle`
 --
 ALTER TABLE `battle`
-  ADD PRIMARY KEY (`battle_id`);
+  ADD PRIMARY KEY (`battle_id`),
+  ADD KEY `fk_battle_current_turn` (`current_turn`);
 
 --
 -- Indexes for table `bids_in`
@@ -358,6 +419,12 @@ ALTER TABLE `wishlist`
 ALTER TABLE `auction`
   ADD CONSTRAINT `fk_auction_card` FOREIGN KEY (`card_id`) REFERENCES `card` (`card_id`),
   ADD CONSTRAINT `fk_auction_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `battle`
+--
+ALTER TABLE `battle`
+  ADD CONSTRAINT `fk_battle_current_turn` FOREIGN KEY (`current_turn`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `bids_in`
