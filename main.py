@@ -527,7 +527,7 @@ def my_cards():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("""
-        SELECT card_id, name, type, value, normal, golden, holographic
+        SELECT card_id, name, value, normal, golden, holographic
         FROM card
         WHERE owner_id = %s
     """, (user_id,))

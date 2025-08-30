@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 29, 2025 at 11:24 PM
+-- Generation Time: Aug 30, 2025 at 05:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -70,7 +70,7 @@ INSERT INTO `battle` (`battle_id`, `amount`, `date`, `winner`, `loser`, `status`
 (7, 20.00, '2025-08-29 11:50:00', 1, 3, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
 (8, 45.00, '2025-08-29 13:05:00', 8, 7, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
 (9, 55.00, '2025-08-29 15:40:00', 10, 9, '', 0, 0, NULL, NULL, '2025-08-29 20:42:21'),
-(10, 70.00, '2025-08-30 02:33:58', 10, 9, 'ongoing', 65, 30, 9, 'attack', '2025-08-29 20:57:17');
+(10, 70.00, '2025-08-30 02:33:58', 10, 9, 'ongoing', 65, 60, 10, 'special', '2025-08-30 14:32:53');
 
 -- --------------------------------------------------------
 
@@ -93,7 +93,6 @@ CREATE TABLE `bids_in` (
 
 CREATE TABLE `card` (
   `card_id` int(11) NOT NULL,
-  `type` varchar(50) DEFAULT NULL,
   `name` varchar(100) DEFAULT NULL,
   `value` decimal(10,2) DEFAULT NULL,
   `normal` tinyint(1) DEFAULT NULL,
@@ -107,47 +106,47 @@ CREATE TABLE `card` (
 -- Dumping data for table `card`
 --
 
-INSERT INTO `card` (`card_id`, `type`, `name`, `value`, `normal`, `golden`, `holographic`, `owner_id`, `trade_id`) VALUES
-(1, 'Pokemon', 'Pikachu', 25.00, 1, 0, 0, 2, NULL),
-(2, 'Pokemon', 'Charizard', 85.00, 0, 0, 1, 2, NULL),
-(3, 'Pokemon', 'Bulbasaur', 15.00, 1, 0, 0, 2, NULL),
-(4, 'Pokemon', 'Squirtle', 18.00, 1, 0, 0, 2, NULL),
-(5, 'Pokemon', 'Jigglypuff', 12.00, 1, 0, 0, 2, NULL),
-(6, 'Pokemon', 'Eevee', 20.00, 1, 0, 0, 3, NULL),
-(7, 'Pokemon', 'Vaporeon', 45.00, 0, 1, 0, 3, NULL),
-(8, 'Pokemon', 'Jolteon', 42.00, 0, 1, 0, 3, NULL),
-(9, 'Pokemon', 'Flareon', 40.00, 0, 1, 0, 3, NULL),
-(10, 'Pokemon', 'Mewtwo', 95.00, 0, 0, 1, 3, NULL),
-(11, 'Pokemon', 'Snorlax', 55.00, 1, 0, 0, 4, NULL),
-(12, 'Pokemon', 'Gyarados', 48.00, 1, 0, 0, 4, NULL),
-(13, 'Pokemon', 'Dragonite', 75.00, 0, 0, 1, 4, NULL),
-(14, 'Pokemon', 'Gengar', 38.00, 1, 0, 0, 4, NULL),
-(15, 'Pokemon', 'Alakazam', 42.00, 0, 1, 0, 4, NULL),
-(16, 'Pokemon', 'Machop', 15.00, 1, 0, 0, 7, NULL),
-(17, 'Pokemon', 'Geodude', 12.00, 1, 0, 0, 7, NULL),
-(18, 'Pokemon', 'Abra', 18.00, 1, 0, 0, 7, NULL),
-(19, 'Pokemon', 'Growlithe', 22.00, 1, 0, 0, 7, NULL),
-(20, 'Pokemon', 'Ponyta', 20.00, 1, 0, 0, 7, NULL),
-(21, 'Pokemon', 'Magikarp', 5.00, 1, 0, 0, 8, NULL),
-(22, 'Pokemon', 'Psyduck', 16.00, 1, 0, 0, 8, NULL),
-(23, 'Pokemon', 'Poliwag', 14.00, 1, 0, 0, 8, NULL),
-(24, 'Pokemon', 'Tentacool', 15.00, 1, 0, 0, 8, NULL),
-(25, 'Pokemon', 'Slowpoke', 17.00, 1, 0, 0, 8, NULL),
-(26, 'Pokemon', 'Magnemite', 16.00, 1, 0, 0, 9, NULL),
-(27, 'Pokemon', 'Voltorb', 15.00, 1, 0, 0, 9, NULL),
-(28, 'Pokemon', 'Electrode', 35.00, 0, 1, 0, 9, NULL),
-(29, 'Pokemon', 'Cubone', 18.00, 1, 0, 0, 9, NULL),
-(30, 'Pokemon', 'Marowak', 38.00, 0, 1, 0, 9, NULL),
-(31, 'Pokemon', 'Hitmonlee', 45.00, 1, 0, 0, 10, NULL),
-(32, 'Pokemon', 'Hitmonchan', 45.00, 1, 0, 0, 10, NULL),
-(33, 'Pokemon', 'Lickitung', 25.00, 1, 0, 0, 10, NULL),
-(34, 'Pokemon', 'Koffing', 16.00, 1, 0, 0, 10, NULL),
-(35, 'Pokemon', 'Rhyhorn', 22.00, 1, 0, 0, 10, NULL),
-(36, 'Pokemon', 'Charmander', 20.00, 1, 0, 0, 1, NULL),
-(37, 'Pokemon', 'Charmeleon', 45.00, 0, 1, 0, 1, NULL),
-(38, 'Pokemon', 'Charizard', 85.00, 0, 0, 1, 1, NULL),
-(39, 'Pokemon', 'Vulpix', 18.00, 1, 0, 0, 1, NULL),
-(40, 'Pokemon', 'Ninetales', 55.00, 0, 1, 0, 1, NULL);
+INSERT INTO `card` (`card_id`, `name`, `value`, `normal`, `golden`, `holographic`, `owner_id`, `trade_id`) VALUES
+(1, 'Pikachu', 25.00, 1, 0, 0, 2, NULL),
+(2, 'Charizard', 85.00, 0, 0, 1, 2, NULL),
+(3, 'Bulbasaur', 15.00, 1, 0, 0, 2, NULL),
+(4, 'Squirtle', 18.00, 1, 0, 0, 2, NULL),
+(5, 'Jigglypuff', 12.00, 1, 0, 0, 2, NULL),
+(6, 'Eevee', 20.00, 1, 0, 0, 3, NULL),
+(7, 'Vaporeon', 45.00, 0, 1, 0, 3, NULL),
+(8, 'Jolteon', 42.00, 0, 1, 0, 3, NULL),
+(9, 'Flareon', 40.00, 0, 1, 0, 3, NULL),
+(10, 'Mewtwo', 95.00, 0, 0, 1, 3, NULL),
+(11, 'Snorlax', 55.00, 1, 0, 0, 4, NULL),
+(12, 'Gyarados', 48.00, 1, 0, 0, 4, NULL),
+(13, 'Dragonite', 75.00, 0, 0, 1, 4, NULL),
+(14, 'Gengar', 38.00, 1, 0, 0, 4, NULL),
+(15, 'Alakazam', 42.00, 0, 1, 0, 4, NULL),
+(16, 'Machop', 15.00, 1, 0, 0, 7, NULL),
+(17, 'Geodude', 12.00, 1, 0, 0, 7, NULL),
+(18, 'Abra', 18.00, 1, 0, 0, 7, NULL),
+(19, 'Growlithe', 22.00, 1, 0, 0, 7, NULL),
+(20, 'Ponyta', 20.00, 1, 0, 0, 7, NULL),
+(21, 'Magikarp', 5.00, 1, 0, 0, 8, NULL),
+(22, 'Psyduck', 16.00, 1, 0, 0, 8, NULL),
+(23, 'Poliwag', 14.00, 1, 0, 0, 8, NULL),
+(24, 'Tentacool', 15.00, 1, 0, 0, 8, NULL),
+(25, 'Slowpoke', 17.00, 1, 0, 0, 8, NULL),
+(26, 'Magnemite', 16.00, 1, 0, 0, 9, NULL),
+(27, 'Voltorb', 15.00, 1, 0, 0, 9, NULL),
+(28, 'Electrode', 35.00, 0, 1, 0, 9, NULL),
+(29, 'Cubone', 18.00, 1, 0, 0, 9, NULL),
+(30, 'Marowak', 38.00, 0, 1, 0, 9, NULL),
+(31, 'Hitmonlee', 45.00, 1, 0, 0, 10, NULL),
+(32, 'Hitmonchan', 45.00, 1, 0, 0, 10, NULL),
+(33, 'Lickitung', 25.00, 1, 0, 0, 10, NULL),
+(34, 'Koffing', 16.00, 1, 0, 0, 10, NULL),
+(35, 'Rhyhorn', 22.00, 1, 0, 0, 10, NULL),
+(36, 'Charmander', 20.00, 1, 0, 0, 1, NULL),
+(37, 'Charmeleon', 45.00, 0, 1, 0, 1, NULL),
+(38, 'Charizard', 85.00, 0, 0, 1, 1, NULL),
+(39, 'Vulpix', 18.00, 1, 0, 0, 1, NULL),
+(40, 'Ninetales', 55.00, 0, 1, 0, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -247,8 +246,9 @@ INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `balance`, `join_da
 (4, 'Peter Jones', 'p.jones@example.com', 'best_pass_ever', 100.00, '2025-08-19', NULL, '2025-08-18 19:41:38', NULL),
 (7, 'alu', 'alu@gmail.com', 'helloalu', 100.00, '2025-08-29', NULL, '2025-08-29 08:19:17', '2025-08-29'),
 (8, 'maomao', 'mao@gmail.com', 'alumao', 100.00, '2025-08-29', NULL, '2025-08-29 15:53:40', '2025-08-29'),
-(9, 'saihan', 'saihan@gmail.com', 'saihanposa', 100.00, '2025-08-29', NULL, '2025-08-29 16:22:36', '2025-08-29'),
-(10, 'mehu', 'mehu@gmail.com', 'mehu', 200.00, '2025-08-29', NULL, '2025-08-29 20:18:42', '2025-08-30');
+(9, 'saihan', 'saihan@gmail.com', 'saihanposa', 200.00, '2025-08-29', NULL, '2025-08-30 14:32:46', '2025-08-30'),
+(10, 'mehu', 'mehu@gmail.com', 'mehu', 200.00, '2025-08-29', NULL, '2025-08-29 20:18:42', '2025-08-30'),
+(11, 'maomao@gmail.com', 'maomao@gmail.com', 'maomao@gmail.com', 100.00, '2025-08-30', NULL, '2025-08-30 14:16:21', '2025-08-30');
 
 -- --------------------------------------------------------
 
@@ -401,7 +401,7 @@ ALTER TABLE `trade`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `wishlist`
