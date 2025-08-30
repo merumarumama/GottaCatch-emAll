@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from collections import defaultdict
 import random
 import time
@@ -626,20 +626,213 @@ def my_cards():
 
 @app.route('/market')
 def market():
+    return redirect(url_for('auctions'))
+
+@app.route('/auctions')
+def auctions():
     if 'user_id' not in session:
         flash('Please log in first!', 'danger')
         return redirect(url_for('login'))
 
     cursor = mysql.connection.cursor()
-    cursor.execute("SELECT * FROM Users WHERE user_id = %s", (session['user_id'],))
+    
+    # Fetch active auctions with user and card details
+    cursor.execute("""
+        SELECT a.auction_id, a.start_time, a.end_time, a.starting_bid, 
+               u.user_id as seller_id, u.name as seller_name,
+               c.card_id, c.name as card_name, c.value, c.normal, c.golden, c.holographic,
+               (SELECT MAX(bid_amount) FROM bids_in WHERE auction_id = a.auction_id) as current_bid
+        FROM auction a
+        JOIN users u ON a.user_id = u.user_id
+        JOIN card c ON a.card_id = c.card_id
+        WHERE a.end_time > NOW() AND c.owner_id = u.user_id
+        ORDER BY a.end_time ASC
+    """)
+    active_auctions = cursor.fetchall()
+    
+    # Fetch user's cards for creating auctions
+    cursor.execute("""
+        SELECT card_id, name, value, normal, golden, holographic 
+        FROM card 
+        WHERE owner_id = %s
+    """, (session['user_id'],))
+    user_cards = cursor.fetchall()
+    
+    # Fetch user info including balance
+    cursor.execute('SELECT * FROM users WHERE user_id = %s', (session['user_id'],))
     user = cursor.fetchone()
+    user_balance = user['balance']
+    
+    cursor.close()
+    
+    return render_template('Auctiontrade.html', 
+                         active_auctions=active_auctions, 
+                         user_cards=user_cards,
+                         user_balance=user_balance,
+                         user=user)
 
-    return render_template('Auctiontrade.html', user=user)
+@app.route('/create_auction', methods=['POST'])
+def create_auction():
+    if 'user_id' not in session:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+    
+    card_id = request.form.get('card_id')
+    starting_bid = request.form.get('starting_bid')
+    duration_hours = request.form.get('duration', 24)  # Default 24 hours
+    
+    try:
+        starting_bid = float(starting_bid)
+        duration_hours = int(duration_hours)
+    except (ValueError, TypeError):
+        flash('Invalid input values!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    if starting_bid <= 0:
+        flash('Starting bid must be greater than 0!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    cursor = mysql.connection.cursor()
+    
+    # Verify user owns the card
+    cursor.execute('SELECT owner_id FROM card WHERE card_id = %s', (card_id,))
+    card = cursor.fetchone()
+    
+    if not card or card['owner_id'] != session['user_id']:
+        flash('You do not own this card!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    # Check if card is already in an active auction
+    cursor.execute("""
+        SELECT auction_id FROM auction 
+        WHERE card_id = %s AND end_time > NOW()
+    """, (card_id,))
+    existing_auction = cursor.fetchone()
+    
+    if existing_auction:
+        flash('This card is already listed in an active auction!', 'warning')
+        return redirect(url_for('auctions'))
+    
+    # Create the auction
+    start_time = datetime.now()
+    end_time = start_time + timedelta(hours=duration_hours)
+    
+    cursor.execute("""
+        INSERT INTO auction (start_time, end_time, starting_bid, user_id, card_id)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (start_time, end_time, starting_bid, session['user_id'], card_id))
+    
+    mysql.connection.commit()
+    cursor.close()
+    
+    flash('Auction created successfully!', 'success')
+    return redirect(url_for('auctions'))
 
+@app.route('/place_bid', methods=['POST'])
+def place_bid():
+    if 'user_id' not in session:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+    
+    auction_id = request.form.get('auction_id')
+    bid_amount = request.form.get('bid_amount')
+    
+    try:
+        bid_amount = float(bid_amount)
+        auction_id = int(auction_id)
+    except (ValueError, TypeError):
+        flash('Invalid bid amount!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    cursor = mysql.connection.cursor()
+    
+    # Get auction details
+    cursor.execute("""
+        SELECT a.*, c.name as card_name, u.name as seller_name,
+               (SELECT MAX(bid_amount) FROM bids_in WHERE auction_id = a.auction_id) as current_bid
+        FROM auction a
+        JOIN card c ON a.card_id = c.card_id
+        JOIN users u ON a.user_id = u.user_id
+        WHERE a.auction_id = %s AND a.end_time > NOW()
+    """, (auction_id,))
+    auction = cursor.fetchone()
+    
+    if not auction:
+        flash('Auction not found or has ended!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    # Check if user is the seller
+    if auction['user_id'] == session['user_id']:
+        flash('You cannot bid on your own auction!', 'warning')
+        return redirect(url_for('auctions'))
+    
+    # Get user balance
+    cursor.execute('SELECT balance FROM users WHERE user_id = %s', (session['user_id'],))
+    user_balance = cursor.fetchone()['balance']
+    
+    # Determine minimum bid
+    current_bid = auction['current_bid'] if auction['current_bid'] else auction['starting_bid']
+    min_bid = current_bid + 1 if current_bid else auction['starting_bid']
+    
+    # Validate bid
+    if bid_amount < min_bid:
+        flash(f'Bid must be at least ${min_bid:.2f}!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    if bid_amount > user_balance:
+        flash('You do not have enough balance to place this bid!', 'danger')
+        return redirect(url_for('auctions'))
+    
+    # Place the bid
+    cursor.execute("""
+        INSERT INTO bids_in (user_id, auction_id, bid_amount)
+        VALUES (%s, %s, %s)
+    """, (session['user_id'], auction_id, bid_amount))
+    
+    mysql.connection.commit()
+    cursor.close()
+    
+    flash(f'Bid of ${bid_amount:.2f} placed successfully!', 'success')
+    return redirect(url_for('auctions'))
 
-
-
-
+@app.route('/my_auctions')
+def my_auctions():
+    if 'user_id' not in session:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+    
+    cursor = mysql.connection.cursor()
+    
+    # Fetch user's active auctions
+    cursor.execute("""
+        SELECT a.*, c.name as card_name, c.value,
+               (SELECT MAX(bid_amount) FROM bids_in WHERE auction_id = a.auction_id) as current_bid,
+               (SELECT COUNT(*) FROM bids_in WHERE auction_id = a.auction_id) as bid_count
+        FROM auction a
+        JOIN card c ON a.card_id = c.card_id
+        WHERE a.user_id = %s AND a.end_time > NOW()
+        ORDER BY a.end_time ASC
+    """, (session['user_id'],))
+    active_auctions = cursor.fetchall()
+    
+    # Fetch user's ended auctions
+    cursor.execute("""
+        SELECT a.*, c.name as card_name, c.value,
+               (SELECT MAX(bid_amount) FROM bids_in WHERE auction_id = a.auction_id) as winning_bid,
+               (SELECT user_id FROM bids_in WHERE auction_id = a.auction_id 
+                AND bid_amount = (SELECT MAX(bid_amount) FROM bids_in WHERE auction_id = a.auction_id)) as winner_id
+        FROM auction a
+        JOIN card c ON a.card_id = c.card_id
+        WHERE a.user_id = %s AND a.end_time <= NOW()
+        ORDER BY a.end_time DESC
+    """, (session['user_id'],))
+    ended_auctions = cursor.fetchall()
+    
+    cursor.close()
+    
+    return render_template('my_auctions.html', 
+                         active_auctions=active_auctions,
+                         ended_auctions=ended_auctions)
 
 @app.route('/load-sql')
 def load_sql():
@@ -662,6 +855,7 @@ def load_sql():
     except Exception as e:
         flash(f"Error loading SQL file: {e}", "danger")
     return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.secret_key = "your_secret_key"
