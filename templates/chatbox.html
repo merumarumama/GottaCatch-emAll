@@ -6,8 +6,6 @@
     <title>Chat - GottaTradeEmAll</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts for Roboto -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,17 +15,18 @@
                 rgba(0, 0, 0, 0.1) 75%,
                 rgba(74, 20, 140, 0.1) 100%),
             url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
-            background-size: 100% 100%;
-            background-repeat: repeat;
+            background-size: cover;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             background-blend-mode: overlay;
             min-height: 100vh;
-            font-family: 'Courier New', monospace;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #f4f3f4ec;
+            padding: 20px;
         }
 
         .card {
-            background: rgba(22, 23, 26, 0.6);
+            background: rgba(22, 23, 26, 0.85);
             border: 1px solid rgba(112, 116, 117, 0.7);
             backdrop-filter: blur(8px);
             box-shadow: 0 4px 20px rgba(24, 24, 33, 0.4);
@@ -35,10 +34,11 @@
             margin-bottom: 20px;
         }
 
-        .card-title,
-        .form-label,
-        a {
+        .card-title {
             color: #e0f7fa !important;
+            border-bottom: 1px solid rgba(112, 116, 117, 0.7);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .btn-primary {
@@ -52,34 +52,6 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #4bbd55, #0f8731);
             box-shadow: 0 3px 10px rgba(30, 229, 60, 0.8);
-        }
-
-        a:hover {
-            color: #bbdefb !important;
-        }
-
-        .title-container {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .title {
-            font-family: 'Roboto', sans-serif;
-            font-weight: 900;
-            font-size: 70px;
-            color: #ffd600;
-            letter-spacing: 2.5px;
-            text-shadow:
-                0 3px 10px #000000b0,
-                0 6px 18px #00000080,
-                2px 2px 0 #fffde7,
-                0 0 12px #ffd60080,
-                0 0 16px #00000040,
-                0 0 24px #42a5f5cc;
-            border-radius: 12px;
-            padding: 8px 0;
-            display: inline-block;
-            transform: perspective(400px) rotateX(18deg);
         }
 
         .chat-header {
@@ -116,59 +88,77 @@
         }
 
         .chat-window {
-            background: rgba(148, 36, 36, 0.4);
-            border-radius: 5px;
+            background: rgba(148, 36, 36, 0.2);
+            border-radius: 10px;
             padding: 15px;
-            max-height: 60vh;
+            height: 400px;
             overflow-y: auto;
             margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
         }
 
         .message {
-            margin-bottom: 10px;
+            display: flex;
+            margin-bottom: 15px;
+            max-width: 80%;
         }
 
-        .message.sent {
+        .user-message {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .recipient-message {
+            align-self: flex-start;
+        }
+
+        .message-content {
+            padding: 12px 15px;
+            border-radius: 18px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: relative;
+            max-width: 100%;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .recipient-message .message-content {
+            background: linear-gradient(135deg, #424242, #212121);
+            color: #e0f7fa;
+            border-top-left-radius: 4px;
+        }
+
+        .message-timestamp {
+            font-size: 0.75rem;
+            color: #bbdefb;
+            margin-top: 5px;
+        }
+
+        .user-message .message-timestamp {
             text-align: right;
         }
 
-        .message.received {
+        .recipient-message .message-timestamp {
             text-align: left;
-        }
-
-        .message .content {
-            display: inline-block;
-            padding: 8px 12px;
-            border-radius: 10px;
-            max-width: 70%;
-        }
-
-        .message.sent .content {
-            background: #4caf50;
-            color: #fff;
-        }
-
-        .message.received .content {
-            background: #424242;
-            color: #e0f7fa;
-        }
-
-        .message .timestamp {
-            font-size: 0.8rem;
-            color: #bbdefb;
-            margin-top: 2px;
         }
 
         .message-input {
             background: rgba(22, 23, 26, 0.8);
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 10px;
         }
 
         .message-input .form-control {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(112, 116, 117, 0.7);
             color: #e0f7fa;
+            border-radius: 20px;
         }
 
         .message-input .form-control:focus {
@@ -191,8 +181,51 @@
             align-items: center;
             justify-content: center;
         }
+
+        .title {
+            font-family: 'Roboto', sans-serif;
+            font-weight: 900;
+            font-size: 70px;
+            color: #ffd600;
+            letter-spacing: 2.5px;
+            text-shadow:
+                0 3px 10px #000000b0,
+                0 6px 18px #00000080,
+                2px 2px 0 #fffde7,
+                0 0 12px #ffd60080,
+                0 0 16px #00000040,
+                0 0 24px #42a5f5cc;
+            border-radius: 12px;
+            padding: 8px 0;
+            display: inline-block;
+        }
+
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* Scrollbar styling */
+        .chat-window::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-window::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb {
+            background: rgba(109, 24, 24, 0.5);
+            border-radius: 10px;
+        }
+
+        .chat-window::-webkit-scrollbar-thumb:hover {
+            background: rgba(109, 24, 24, 0.7);
+        }
     </style>
 </head>
+
 <body>
     <!-- Chat Header -->
     <div class="chat-header">
@@ -208,8 +241,13 @@
                             <i class="fas fa-coins me-1" style="color:#ffd600;"></i> Balance: ${{ user.balance }}
                         </button>
                         <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-tachometer-alt"></i> Back to Dashboard
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
                         </a>
+                        {% if recipient %}
+                        <a href="{{ url_for('stop_chat') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-times-circle"></i> Stop Chat
+                        </a>
+                        {% endif %}
                         <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
@@ -223,31 +261,49 @@
         <div class="title-container">
             <h1 class="title">Chat</h1>
         </div>
+        
         <!-- User List -->
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-users me-2"></i>Users</h5>
+                        <h5 class="card-title"><i class="fas fa-users me-2"></i>Available Users</h5>
                         <div class="chat-sidebar">
-                            {% for u in allusers %}
-                            <div class="chat-user {% if u.id == recipient_id %}active{% endif %}">
-                                <form action="{{ url_for('chatbox') }}" method="get">
-                                    <input type="hidden" name="recipient_id" value="{{ u.id }}">
-                                    <button type="submit" class="btn btn-link p-0 text-start w-100">
-                                        <i class="fas fa-user me-2"></i>{{ u.name }}
-                                        {% if u.unread_count %}
-                                        <span class="notification-badge">{{ u.unread_count }}</span>
-                                        {% endif %}
-                                    </button>
-                                </form>
-                            </div>
+                            {% for u in all_users %}
+                            <a href="{{ url_for('chatbox', recipient_id=u.user_id) }}" class="text-decoration-none">
+                                <div class="chat-user {% if recipient and recipient.user_id == u.user_id %}active{% endif %}">
+                                    <i class="fas fa-user me-2"></i>{{ u.name }}
+                                    {% if u.chatuser_id == user.user_id %}
+                                    <span class="badge bg-success float-end">Online</span>
+                                    {% endif %}
+                                </div>
+                            </a>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        {% if recipient and recipient.chatuser_id != user.user_id %}
+        <p class="text-center text-warning">
+            <span style="
+            background: #000;
+            color: #ffd600;
+            font-weight: bold;
+            font-size: 1.3rem;
+            padding: 14px 28px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px #151515cc;
+            display: inline-block;
+            border: 2px solid #ffd600;
+            letter-spacing: 1px;
+            ">
+            <i class="fas fa-spinner fa-spin me-2"></i>
+            Waiting for {{ recipient.name }} to join the chat...
+            </span>
+        </p>
+        {% endif %}
+
         <!-- Chat Window -->
         <div class="row">
             <div class="col-12">
@@ -264,12 +320,12 @@
                         <div class="chat-window">
                             {% if messages %}
                             {% for message in messages %}
-                            <div class="message {% if message.sender_id == user.id %}sent{% else %}received{% endif %}">
-                                <div class="content">
+                            <div class="message {% if message.sender_id == user.user_id %}user-message{% else %}recipient-message{% endif %}">
+                                <div class="message-content">
                                     {{ message.content }}
-                                </div>
-                                <div class="timestamp">
-                                    {{ message.timestamp.strftime('%b %d, %Y %H:%M') }}
+                                    <div class="message-timestamp">
+                                        {{ message.timestamp.strftime('%b %d, %Y %H:%M') }}
+                                    </div>
                                 </div>
                             </div>
                             {% endfor %}
@@ -279,10 +335,10 @@
                         </div>
                         {% if recipient %}
                         <div class="message-input">
-                            <form action="{{ url_for('send_message') }}" method="post">
-                                <input type="hidden" name="recipient_id" value="{{ recipient.id }}">
+                            <form action="{{ url_for('send_message') }}" method="post" id="messageForm">
+                                <input type="hidden" name="recipient_id" value="{{ recipient.user_id }}">
                                 <div class="input-group">
-                                    <input type="text" name="content" class="form-control" placeholder="Type your message..." required>
+                                    <input type="text" name="content" class="form-control" placeholder="Type your message..." required maxlength="500">
                                     <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-paper-plane"></i> Send
                                     </button>
@@ -298,5 +354,87 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% if recipient %}
+    <script>
+        // Function to scroll chat to bottom
+        function scrollChatToBottom() {
+            const chatWindow = document.querySelector('.chat-window');
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Scroll to bottom initially
+        setTimeout(scrollChatToBottom, 100);
+
+        // Auto-refresh the chat messages every 3 seconds
+        setInterval(function() {
+            fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const newDoc = parser.parseFromString(html, 'text/html');
+                    const newMessages = newDoc.querySelector('.chat-window');
+                    if (newMessages) {
+                        // Store current scroll position
+                        const chatWindow = document.querySelector('.chat-window');
+                        const wasAtBottom = chatWindow.scrollTop + chatWindow.clientHeight >= chatWindow.scrollHeight - 50;
+                        
+                        // Update messages
+                        chatWindow.innerHTML = newMessages.innerHTML;
+                        
+                        // Scroll to bottom if user was at bottom before update
+                        if (wasAtBottom) {
+                            scrollChatToBottom();
+                        }
+                    }
+                })
+                .catch(error => console.log('Auto-refresh error:', error));
+        }, 3000);
+
+        // Handle form submission without page refresh
+        document.getElementById('messageForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            const formData = new FormData(this);
+            const messageInput = this.querySelector('input[name="content"]');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            try {
+                // Send the message
+                const response = await fetch('{{ url_for("send_message") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Clear input field
+                    messageInput.value = '';
+                    
+                    // Refresh messages and scroll to bottom
+                    const chatWindow = document.querySelector('.chat-window');
+                    const responseHtml = await fetch(window.location.href);
+                    const html = await responseHtml.text();
+                    const parser = new DOMParser();
+                    const newDoc = parser.parseFromString(html, 'text/html');
+                    const newMessages = newDoc.querySelector('.chat-window');
+                    
+                    if (newMessages) {
+                        chatWindow.innerHTML = newMessages.innerHTML;
+                        scrollChatToBottom();
+                    }
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        });
+
+        // Scroll to bottom when page loads
+        window.addEventListener('load', function() {
+            setTimeout(scrollChatToBottom, 300);
+        });
+    </script>
+    {% endif %}
 </body>
 </html>
