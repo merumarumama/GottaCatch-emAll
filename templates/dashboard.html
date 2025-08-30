@@ -315,12 +315,16 @@
                             <button class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Add a Card to Your Wishlist
                             </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-exchange-alt me-2"></i>Start New Trade
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-gavel me-2"></i>Create Auction
-                            </button>
+                            <form action="{{ url_for('market') }}" method="post">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Start New Trade
+                                </button>
+                            </form>
+                            <form action="{{ url_for('market') }}" method="post">
+                                <button type = "submit" class="btn btn-primary">
+                                    <i class="fas fa-gavel me-2"></i>Create Auction
+                                </button>
+                            </form>    
                             <div class="row">
                                 <div class="col-auto">
                                     <form action="{{ url_for('start_battle') }}" method="post">
