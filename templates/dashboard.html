@@ -14,11 +14,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(to bottom,
-                rgba(0, 0, 0, 0.1) 0%,
-                rgba(0, 0, 0, 0.1) 75%,
-                rgba(74, 20, 140, 0.1) 100%),
-            url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
+            background:
+                linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.1) 0%,
+                    rgba(0, 0, 0, 0.1) 75%,
+                    rgba(74, 20, 140, 0.1) 100%),
+                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
             background-size: 100% 100%;
             background-repeat: repeat;
             background-attachment: fixed;
@@ -35,10 +36,6 @@
             box-shadow: 0 4px 20px rgba(24, 24, 33, 0.4);
             color: #e0f7fa;
             margin-bottom: 20px;
-        }
-
-        .card-msg {
-            margin-bottom: 8px;
         }
 
         .card-title,
@@ -111,9 +108,7 @@
             color: #bbdefb;
         }
 
-        .trade-item,
-        .auction-item,
-        .battle-item {
+        .trade-item, .auction-item, .battle-item {
             background: rgba(148, 36, 36, 0.4);
             border-radius: 5px;
             padding: 10px;
@@ -122,13 +117,11 @@
         }
 
         .battle-win {
-            border-left: 3px solid #4caf50;
-            /* Green for wins */
+            border-left: 3px solid #4caf50; /* Green for wins */
         }
 
         .battle-loss {
-            border-left: 3px solid #f44336;
-            /* Red for losses */
+            border-left: 3px solid #f44336; /* Red for losses */
         }
 
         .notification-badge {
@@ -160,7 +153,7 @@
                 <div class="col-md-6 text-end">
                     <div class="btn-group">
                         <button class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-coins me-1" style="color:#ffd600;"></i> Balance: ${{ user.balance }}
+                            <i class="fas fa-coins me-1"></i> Balance: ${{ user.balance }}
                         </button>
                         <button class="btn btn-outline-light btn-sm position-relative">
                             <i class="fas fa-bell"></i>
@@ -198,9 +191,8 @@
             </div>
             <div class="col-md-3">
                 <div class="card stat-card">
-                    <div class="stat-number">{{ battles_count }}</div>
+                    <div class="stat-number">{{ battles }}</div>
                     <div class="stat-label">Battles Participated</div>
-
                 </div>
             </div>
         </div>
@@ -232,7 +224,7 @@
                             <small>Started: Aug 29, 2023</small>
                         </div>
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">View All Trades</button>
+                            <a href="{{ url_for('auction_trade_page') }}" class="btn btn-primary btn-sm">View All Trades</a>
                         </div>
                     </div>
                 </div>
@@ -260,45 +252,7 @@
                             <small>Your bid: $115.00 (Highest bidder)</small>
                         </div>
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">Browse Auctions</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!--  INSERT NEW STUFF AFTER THIS-->
-
-
-
-                <!-- Battle Histories -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-trophy me-2"></i>Battle Histories</h5>
-                        {% for battle in battles %}
-                        <div
-                            class="battle-item {% if battle.result == 'Win' %}battle-win{% else %}battle-loss{% endif %}">
-                            <div class="d-flex justify-content-between">
-                                <div>
-                                    <strong>Vs. {{ battle.opponent }}</strong> - Winner: {% if battle.result ==
-                                    'Win' %}You{% else %}{{ battle.opponent }}{% endif %}
-                                </div>
-                                <span
-                                    class="badge {% if battle.result == 'Win' %}bg-success{% else %}bg-danger{% endif %}">
-                                    {{ battle.result }}
-                                </span>
-                            </div>
-                            <small>
-                                {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{
-                                battle.stake }}{% endif %} |
-                                {{ battle.date.strftime('%b %d, %Y') }}
-                            </small>
-                        </div>
-                        {% endfor %}
-
-                        <div class="text-end mt-3">
-                            <form action="{{ url_for('battle_history') }}" method="get" class="text-end">
-                                <button type="submit" class="btn btn-primary btn-sm">View All Battles</button>
-                            </form>
-
+                            <a href="{{ url_for('auction_trade_page') }}" class="btn btn-primary btn-sm">Browse Auctions</a>
                         </div>
                     </div>
                 </div>
@@ -312,10 +266,7 @@
                         <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                         <div class="d-grid gap-2">
                             <button class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Add New Card to Inventory
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Add a Card to Your Wishlist
+                                <i class="fas fa-plus me-2"></i>Add New Card
                             </button>
                             <button class="btn btn-primary">
                                 <i class="fas fa-exchange-alt me-2"></i>Start New Trade
@@ -323,38 +274,46 @@
                             <button class="btn btn-primary">
                                 <i class="fas fa-gavel me-2"></i>Create Auction
                             </button>
-                            <div class="row">
-                                <div class="col-auto">
-                                    <form action="{{ url_for('start_battle') }}" method="post">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-fist-raised me-2"></i>Start Battle
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="col-auto">
-                                    <a href="{{ url_for('my_cards') }}" class="btn btn-primary">
-                                        <i class="fas fa-clone me-2"></i>My Cards List
-                                    </a>
-                                </div>
-                            </div>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-fist-raised me-2"></i>Start Battle
+                            </button>
                         </div>
                     </div>
                 </div>
-                <!-- CHAT Stuffs Kichu ekta -->
+
+                <!-- Battle Histories -->
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-envelope me-2"></i>Chat Box</h5>
-                        <div class="d-grid gap-2">
-                            {% for u in allusers %}
-                            <form action="{{ url_for('chatbox') }}" method="get" class="mb-2">
-                                <input type="hidden" name="recipient_id" value="{{ u.id }}">
-                                <button type="submit" class="btn btn-primary w-100 text-start p-2">
-                                    <div class="card-msg mb-0">
-                                        <i class="fas fa-user me-2"></i> {{ u.name }}
-                                    </div>
-                                </button>
-                            </form>
-                            {% endfor %}
+                        <h5 class="card-title"><i class="fas fa-trophy me-2"></i>My Battle Histories</h5>
+                        <div class="battle-item battle-win">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Vs. Brock</strong> - Winner: You
+                                </div>
+                                <span class="badge bg-success">Win</span>
+                            </div>
+                            <small>Prize: $25 | Aug 29, 2023</small>
+                        </div>
+                        <div class="battle-item battle-loss">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Vs. Misty</strong> - Winner: Misty
+                                </div>
+                                <span class="badge bg-danger">Loss</span>
+                            </div>
+                            <small>Stake: $15 | Aug 28, 2023</small>
+                        </div>
+                        <div class="battle-item battle-win">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <strong>Vs. Gary</strong> - Winner: You
+                                </div>
+                                <span class="badge bg-success">Win</span>
+                            </div>
+                            <small>Prize: $40 | Aug 27, 2023</small>
+                        </div>
+                        <div class="text-end mt-3">
+                            <button class="btn btn-primary btn-sm">View All Battles</button>
                         </div>
                     </div>
                 </div>
@@ -364,6 +323,7 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
