@@ -309,20 +309,23 @@
                     <div class="card-body">
                         <h5 class="card-title"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                         <div class="d-grid gap-2">
+                            <form action="{{ url_for('add_card') }}" method="post">
                             <button class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Add New Card to Inventory
                             </button>
+                            </form>
+                            <form action="{{ url_for('add_card') }}" method="post">
                             <button class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Add a Card to Your Wishlist
                             </button>
-                            <form action="{{ url_for('market') }}" method="post">
-                                <button class="btn btn-primary">
-                                    <a href="{{ url_for('market') }}#trades" class="btn btn-primary"><i class="fas fa-exchange-alt me-2"></i>Start New Trade</a>
-                                </button>
                             </form>
                             <form action="{{ url_for('market') }}" method="post">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-exchange-alt me-2"></i>Start New Trade
+                            </button>
+                            <form action="{{ url_for('market') }}" method="post">
                                 <button type = "submit" class="btn btn-primary">
-                                    <a href="{{ url_for('market') }}#auctions" class="btn btn-primary"><i class="fas fa-gavel me-2"></i>Create Auction</a>
+                                    <i class="fas fa-gavel me-2"></i>Create Auction
                                 </button>
                             </form>    
                             <div class="row">
@@ -349,7 +352,7 @@
                         <div class="d-grid gap-2">
                             {% for u in allusers %}
                             <form action="{{ url_for('chatbox') }}" method="get" class="mb-2">
-                                <input type="hidden" name="recipient_id" value="{{ u.user_id }}">
+                                <input type="hidden" name="recipient_id" value="{{ u.id }}">
                                 <button type="submit" class="btn btn-primary w-100 text-start p-2">
                                     <div class="card-msg mb-0">
                                         <i class="fas fa-user me-2"></i> {{ u.name }}
@@ -360,7 +363,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
