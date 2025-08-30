@@ -516,6 +516,31 @@ def chatbox():
 
 
 
+
+@app.route('/my_cards')
+def my_cards():
+    if "user_id" not in session:
+        flash("Please log in first!", "danger")
+        return redirect(url_for("login"))
+
+    user_id = session['user_id']
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+        SELECT card_id, name, type, value, normal, golden, holographic
+        FROM card
+        WHERE owner_id = %s
+    """, (user_id,))
+    user_cards = cursor.fetchall()
+    cursor.close()
+
+    return render_template("cards.html", user_cards=user_cards)
+
+
+
+
+
+
 @app.route('/load-sql')
 def load_sql():
     try:

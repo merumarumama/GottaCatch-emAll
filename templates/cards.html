@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cards - GottaTradeEmAll</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.1) 0%,
+                    rgba(0, 0, 0, 0.1) 75%,
+                    rgba(74, 20, 140, 0.1) 100%),
+                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: 'Courier New', monospace;
+            color: #f4f3f4ec;
+        }
+
+        .card {
+            background: rgba(78, 4, 4, 0.7);
+            border: 1px solid rgba(112, 116, 117, 0.6);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 15px rgba(63, 63, 80, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: #ffd600 !important;
+        }
+
+        .card-value {
+            color: #ff8800ff;
+            font-weight: bold;
+        }
+
+        .pokemon-box {
+            border: 2px solid #ffd600;
+            border-radius: 12px;
+            height: 200px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .pokemon-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .dashboard-header {
+            background: rgba(109, 24, 24, 0.7);
+            padding: 15px 0;
+            margin-bottom: 25px;
+            border-bottom: 2px solid rgba(230, 173, 173, 0.5);
+        }
+
+        .badge {
+            margin-top: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-id-card me-2"></i>My Cards</h2>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Cards List -->
+    <div class="container">
+        {% if user_cards %}
+        <div class="row">
+            {% for card in user_cards %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 text-center">
+                    <div class="pokemon-box">
+                        <img src="https://img.pokemondb.net/artwork/avif/{{ card.name|lower }}.avif"
+                            alt="{{ card.name|capitalize }}"
+                            onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ card.name|capitalize }}</h5>
+                        <p class="card-value mb-1">Value: ${{ "%.2f"|format(card.value) }}</p>
+
+                        {% if card.golden %}
+                        <span class="badge bg-warning text-dark">Golden</span>
+                        {% elif card.holographic %}
+                        <span class="badge bg-info">Holographic</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Normal</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="card text-center">
+            <div class="card-body">
+                <h4 class="card-title mb-2">No Cards Found</h4>
+                <p class="text-muted">You don’t have any cards yet. Start collecting to build your deck!</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+
