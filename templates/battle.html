@@ -392,20 +392,20 @@
                 <div class="table-responsive red-blur-table">
                     <table class="table table-hover table-bordered align-middle">
                         <thead>
-                            <tr>
-                                <th scope="col">Battle ID</th>
-                                <th scope="col">Opponent</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Result</th>
+                            <tr class="text-center">
+                                <th scope="col" style="background: transparent; color: #ffd600;">Battle ID</th>
+                                <th scope="col" style="background: transparent; color: #ffd600;">Opponent</th>
+                                <th scope="col" style="background: transparent; color: #ffd600;">Date</th>
+                                <th scope="col" style="background: transparent; color: #ffd600;">Result</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for b in battles %}
                             <tr>
-                                <td>{{ b.id }}</td>
-                                <td>{{ b.opponent }}</td>
-                                <td>{{ b.date.strftime('%Y-%m-%d %H:%M') }}</td>
-                                <td>
+                                <td class="text-center" style="background: transparent; color: #fff;">{{ b.id }}</td>
+                                <td class="text-center" style="background: transparent; color: #fff;">{{ b.opponent }}</td>
+                                <td class="text-center" style="background: transparent; color: #fff;">{{ b.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td class="text-center" style="background: transparent;">
                                     {% if b.result == 'Win' %}
                                     <span class="badge bg-success">Win</span>
                                     {% else %}
