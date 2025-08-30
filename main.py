@@ -429,8 +429,25 @@ def make_move():
     elif move == "special":
         damage = random.randint(15, 30)
     # Defend move doesn't do damage
-    
+    elif move == "defend":
+        damage = 5
+
+    # Announce winner if anyone's score reaches 100
+    if (db_battle['player1_score'] + (damage if db_battle['winner'] == user_id else 0)) >= 100:
+        winner_id = db_battle['winner']
+        loser_id = db_battle['loser']
+    elif (db_battle['player2_score'] + (damage if db_battle['loser'] == user_id else 0)) >= 100:
+        winner_id = db_battle['loser']
+        loser_id = db_battle['winner']
+    else:
+        winner_id = None
+        loser_id = None
     # Update scores in database
+    # Check opponent's last move
+    cursor.execute("SELECT current_move FROM battle WHERE battle_id = %s", (battle_id,))
+    last_move_row = cursor.fetchone()
+    if last_move_row and last_move_row['current_move'] == "defend":
+        damage = 0
     if db_battle['winner'] == user_id:
         new_score = db_battle['player1_score'] + damage
         cursor.execute("""
@@ -623,6 +640,40 @@ def my_cards():
 
     return render_template("cards.html", user_cards=user_cards)
 
+@app.route('/add_card', methods=['POST'])
+def add_card():
+    if "user_id" not in session:
+        flash("Please log in first!", "danger")
+        return redirect(url_for("login"))
+    
+    user_id = session['user_id']
+    name = request.form.get('name')
+    value = request.form.get('value')
+    card_type = request.form.get('type')
+    
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # Fetch the last card_id and increment by 1
+        cursor.execute("SELECT MAX(card_id) AS last_id FROM card")
+        last_id_row = cursor.fetchone()
+        next_card_id = (last_id_row['last_id'] or 0) + 1
+
+        cursor.execute("""
+            INSERT INTO card (card_id, owner_id, name, value, normal, golden, holographic)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (next_card_id, user_id, name, value,
+              1 if card_type == 'normal' else 0,
+              1 if card_type == 'golden' else 0,
+              1 if card_type == 'holographic' else 0))
+
+        mysql.connection.commit()
+        cursor.close()
+        
+        print('Card added successfully!', 'success')
+    except Exception as e:
+        print(f'Error adding card: {str(e)}', 'danger')
+    
+    return redirect(url_for('my_cards'))
 
 @app.route('/market')
 def market():
