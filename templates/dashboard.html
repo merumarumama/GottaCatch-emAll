@@ -232,7 +232,7 @@
                             <small>Started: Aug 29, 2023</small>
                         </div>
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">View All Trades</button>
+                            <a href="{{ url_for('market') }}#trades" class="btn btn-primary btn-sm">View All Trades</a>
                         </div>
                     </div>
                 </div>
@@ -260,14 +260,12 @@
                             <small>Your bid: $115.00 (Highest bidder)</small>
                         </div>
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">Browse Auctions</button>
+                            <a href="{{ url_for('market') }}#auctions" class="btn btn-primary btn-sm">Browse Auctions</a>
                         </div>
                     </div>
                 </div>
 
                 <!--  INSERT NEW STUFF AFTER THIS-->
-
-
 
                 <!-- Battle Histories -->
                 <div class="card">
@@ -287,7 +285,7 @@
                                 </span>
                             </div>
                             <small>
-                                {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: ${{
+                                {% if battle.prize %}Prize: ${{ battle.prize }}{% elif battle.stake %}Stake: {{
                                 battle.stake }}{% endif %} |
                                 {{ battle.date.strftime('%b %d, %Y') }}
                             </small>
@@ -317,12 +315,16 @@
                             <button class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Add a Card to Your Wishlist
                             </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-exchange-alt me-2"></i>Start New Trade
-                            </button>
-                            <button class="btn btn-primary">
-                                <i class="fas fa-gavel me-2"></i>Create Auction
-                            </button>
+                            <form action="{{ url_for('market') }}" method="post">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-exchange-alt me-2"></i>Start New Trade
+                                </button>
+                            </form>
+                            <form action="{{ url_for('market') }}" method="post">
+                                <button type = "submit" class="btn btn-primary">
+                                    <i class="fas fa-gavel me-2"></i>Create Auction
+                                </button>
+                            </form>    
                             <div class="row">
                                 <div class="col-auto">
                                     <form action="{{ url_for('start_battle') }}" method="post">

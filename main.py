@@ -624,6 +624,19 @@ def my_cards():
     return render_template("cards.html", user_cards=user_cards)
 
 
+@app.route('/market')
+def market():
+    if 'user_id' not in session:
+        flash('Please log in first!', 'danger')
+        return redirect(url_for('login'))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM Users WHERE user_id = %s", (session['user_id'],))
+    user = cursor.fetchone()
+
+    return render_template('Auctiontrade.html', user=user)
+
+
 
 
 
