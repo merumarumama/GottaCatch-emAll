@@ -13,12 +13,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            background:
-                linear-gradient(to bottom,
-                    rgba(0, 0, 0, 0.1) 0%,
-                    rgba(0, 0, 0, 0.1) 75%,
-                    rgba(74, 20, 140, 0.1) 100%),
-                url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
+            background: linear-gradient(to bottom,
+                rgba(0, 0, 0, 0.1) 0%,
+                rgba(0, 0, 0, 0.1) 75%,
+                rgba(74, 20, 140, 0.1) 100%),
+            url("{{ url_for('static', filename='backgroundImageLogin.jpg') }}");
             background-size: 100% 100%;
             background-repeat: repeat;
             background-attachment: fixed;
@@ -103,9 +102,10 @@
             transform: perspective(400px) rotateX(18deg);
         }
 
-                /* Red transparent blur for tables */
+        /* Red transparent blur for tables */
         .red-blur-table {
-            background: rgba(148, 36, 36, 0.4); /* Red transparent */
+            background: rgba(148, 36, 36, 0.4);
+            /* Red transparent */
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 100, 100, 0.6);
             border-radius: 12px;
@@ -146,11 +146,13 @@
         }
 
         .battle-win {
-            border-left: 3px solid #4caf50; /* Green for wins */
+            border-left: 3px solid #4caf50;
+            /* Green for wins */
         }
 
         .battle-loss {
-            border-left: 3px solid #f44336; /* Red for losses */
+            border-left: 3px solid #f44336;
+            /* Red for losses */
         }
 
         .notification-badge {
@@ -177,7 +179,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: rgba(255, 255, 255, 0.05);
+            background: #fff;
             overflow: hidden;
         }
 
@@ -246,7 +248,9 @@
         }
 
         @keyframes spinner-border {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -285,8 +289,8 @@
                         <p>Chosen Pokémon: {{ current_battle.user_pokemon|capitalize }}</p>
                         <div class="pokemon-box">
                             <img src="https://img.pokemondb.net/artwork/avif/{{current_battle.user_pokemon|lower }}.avif"
-                                 alt="{{ current_battle.user_pokemon|capitalize }}"
-                                 onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
+                                alt="{{ current_battle.user_pokemon|capitalize }}"
+                                onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
                         </div>
                         <p class="mt-2">{{ current_battle.username }}</p>
                         <p>Score: {{ current_battle.user_score }}</p>
@@ -302,8 +306,8 @@
                         <p>Chosen Pokémon: {{ current_battle.opponent_pokemon|capitalize }}</p>
                         <div class="pokemon-box">
                             <img src="https://img.pokemondb.net/artwork/avif/{{current_battle.opponent_pokemon|lower}}.avif"
-                                 alt="{{ current_battle.opponent_pokemon|capitalize }}"
-                                 onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
+                                alt="{{ current_battle.opponent_pokemon|capitalize }}"
+                                onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
                         </div>
                         <p class="mt-2">{{ current_battle.opponent }}</p>
                         <p>Score: {{ current_battle.opponent_score }}</p>
@@ -316,9 +320,11 @@
                         <div class="turn-indicator">
                             <p class="mb-1"><strong>Current Turn:</strong> {{ current_battle.current_turn }}</p>
                             {% if current_battle.current_turn == session.name %}
-                                <p class="mb-0"><strong>Opponent's Last Move:</strong> {{ current_battle.opponent_last_move or "N/A" }}</p>
+                            <p class="mb-0"><strong>Opponent's Last Move:</strong> {{ current_battle.opponent_last_move
+                                or "N/A" }}</p>
                             {% else %}
-                                <p class="mb-0"><strong>Your Last Move:</strong> {{ current_battle.user_last_move or "N/A" }}</p>
+                            <p class="mb-0"><strong>Your Last Move:</strong> {{ current_battle.user_last_move or "N/A"
+                                }}</p>
                             {% endif %}
                         </div>
                     </div>
@@ -330,21 +336,18 @@
                         <h5>Select Move:</h5>
                         <div class="d-flex justify-content-center gap-3">
                             <!-- Around line where battle actions are defined, update the button disabling logic: -->
-                        <button class="btn btn-action" 
-                                {% if not current_battle.is_users_turn %}disabled{% endif %}
+                            <button class="btn btn-action" {% if not current_battle.is_users_turn %}disabled{% endif %}
                                 onclick="makeMove('attack')">
-                            <i class="fas fa-swords me-1"></i>Attack
-                        </button>
-                        <button class="btn btn-action" 
-                                {% if not current_battle.is_users_turn %}disabled{% endif %}
+                                <i class="fas fa-swords me-1"></i>Attack
+                            </button>
+                            <button class="btn btn-action" {% if not current_battle.is_users_turn %}disabled{% endif %}
                                 onclick="makeMove('defend')">
-                            <i class="fas fa-shield-alt me-1"></i>Defend
-                        </button>
-                        <button class="btn btn-action" 
-                                {% if not current_battle.is_users_turn %}disabled{% endif %}
+                                <i class="fas fa-shield-alt me-1"></i>Defend
+                            </button>
+                            <button class="btn btn-action" {% if not current_battle.is_users_turn %}disabled{% endif %}
                                 onclick="makeMove('special')">
-                            <i class="fas fa-bolt me-1"></i>Special
-                        </button>
+                                <i class="fas fa-bolt me-1"></i>Special
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -372,7 +375,8 @@
             <div class="card-body text-center">
                 <h3 class="card-title mb-3"><i class="fas fa-fist-raised me-2"></i>No Active Battle</h3>
                 <p class="text-muted">You don't have any ongoing battles at the moment.</p>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#pokemonSelectModal">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#pokemonSelectModal">
                     <i class="fas fa-plus me-2"></i>Start New Battle
                 </button>
             </div>
@@ -432,7 +436,8 @@
     </div>
 
     <!-- Pokemon Select Modal -->
-    <div class="modal fade" id="pokemonSelectModal" tabindex="-1" aria-labelledby="pokemonSelectModalLabel" aria-hidden="true">
+    <div class="modal fade" id="pokemonSelectModal" tabindex="-1" aria-labelledby="pokemonSelectModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -446,9 +451,8 @@
                         <div class="col-md-3 col-6 mb-3">
                             <div class="card pokemon-select" data-pokemon="{{ card.name|lower }}">
                                 <img src="{{ url_for('static', filename='pokemon_images/' + card.name|lower + '.png') }}"
-                                     class="card-img-top p-3"
-                                     alt="{{ card.name|capitalize }}"
-                                     onerror="this.onerror=null; this.src='{{ url_for('static', filename='pokemon_images/unknown.png') }}';">
+                                    class="card-img-top p-3" alt="{{ card.name|capitalize }}"
+                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='pokemon_images/unknown.png') }}';">
                                 <div class="card-body text-center">
                                     <h6 class="card-title">{{ card.name|capitalize }}</h6>
                                 </div>
@@ -475,33 +479,33 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Pokemon selection logic
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const pokemonSelects = document.querySelectorAll('.pokemon-select');
             const selectedPokemonInput = document.getElementById('selectedPokemon');
             const startBattleBtn = document.getElementById('startBattleBtn');
-            
+
             pokemonSelects.forEach(card => {
-                card.addEventListener('click', function() {
+                card.addEventListener('click', function () {
                     // Remove selected class from all cards
                     pokemonSelects.forEach(c => c.classList.remove('selected'));
-                    
+
                     // Add selected class to clicked card
                     this.classList.add('selected');
-                    
+
                     // Set the selected Pokémon
                     const pokemonName = this.getAttribute('data-pokemon');
                     selectedPokemonInput.value = pokemonName;
-                    
+
                     // Enable the start battle button
                     startBattleBtn.disabled = false;
                 });
             });
-            
+
             // Make move function
-            window.makeMove = function(move) {
+            window.makeMove = function (move) {
                 fetch('{{ url_for("make_move") }}', {
                     method: 'POST',
                     headers: {
@@ -512,24 +516,24 @@
                         move: move
                     })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Reload the page to update battle state
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while making your move.');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Reload the page to update battle state
+                            location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while making your move.');
+                    });
             };
-            
+
             // Auto-refresh if in queue
             {% if in_queue %}
-            setTimeout(function() {
+            setTimeout(function () {
                 location.reload();
             }, 5000); // Refresh every 5 seconds
             {% endif %}
@@ -538,7 +542,3 @@
 </body>
 
 </html>
-
-
-
-
