@@ -232,7 +232,7 @@
                             <small>Started: Aug 29, 2023</small>
                         </div>
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">View All Trades</button>
+                            <a href="{{ url_for('market') }}#trades" class="btn btn-primary btn-sm">View All Trades</a>
                         </div>
                     </div>
                 </div>
@@ -260,7 +260,7 @@
                             <small>Your bid: $115.00 (Highest bidder)</small>
                         </div>
                         <div class="text-end mt-3">
-                            <button class="btn btn-primary btn-sm">Browse Auctions</button>
+                            <a href="{{ url_for('market') }}#auctions" class="btn btn-primary btn-sm">Browse Auctions</a>
                         </div>
                     </div>
                 </div>
