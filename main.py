@@ -640,6 +640,35 @@ def my_cards():
 
     return render_template("cards.html", user_cards=user_cards)
 
+@app.route('/add_card', methods=['POST'])
+def add_card():
+    if "user_id" not in session:
+        flash("Please log in first!", "danger")
+        return redirect(url_for("login"))
+    
+    user_id = session['user_id']
+    name = request.form.get('name')
+    value = request.form.get('value')
+    card_type = request.form.get('type')
+    
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("""
+            INSERT INTO card (owner_id, name, value, normal, golden, holographic)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (user_id, name, value, 
+              1 if card_type == 'normal' else 0,
+              1 if card_type == 'golden' else 0, 
+              1 if card_type == 'holographic' else 0))
+        
+        mysql.connection.commit()
+        cursor.close()
+        
+        print('Card added successfully!', 'success')
+    except Exception as e:
+        print(f'Error adding card: {str(e)}', 'danger')
+    
+    return redirect(url_for('my_cards'))
 
 @app.route('/market')
 def market():
