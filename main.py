@@ -429,8 +429,25 @@ def make_move():
     elif move == "special":
         damage = random.randint(15, 30)
     # Defend move doesn't do damage
-    
+    elif move == "defend":
+        damage = 5
+
+    # Announce winner if anyone's score reaches 100
+    if (db_battle['player1_score'] + (damage if db_battle['winner'] == user_id else 0)) >= 100:
+        winner_id = db_battle['winner']
+        loser_id = db_battle['loser']
+    elif (db_battle['player2_score'] + (damage if db_battle['loser'] == user_id else 0)) >= 100:
+        winner_id = db_battle['loser']
+        loser_id = db_battle['winner']
+    else:
+        winner_id = None
+        loser_id = None
     # Update scores in database
+    # Check opponent's last move
+    cursor.execute("SELECT current_move FROM battle WHERE battle_id = %s", (battle_id,))
+    last_move_row = cursor.fetchone()
+    if last_move_row and last_move_row['current_move'] == "defend":
+        damage = 0
     if db_battle['winner'] == user_id:
         new_score = db_battle['player1_score'] + damage
         cursor.execute("""

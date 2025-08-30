@@ -88,6 +88,54 @@
             </a>
         </div>
     </div>
+    <div class="container mb-4">
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCardModal">
+                <i class="fas fa-plus"></i> Add new card
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Card Modal -->
+    <div class="modal fade" id="addCardModal" tabindex="-1" aria-labelledby="addCardModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-light">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCardModalLabel">
+                        <i class="fas fa-plus"></i> Add New Card
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'add_card' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="cardName" class="form-label">Search or Enter Card Name</label>
+                            <input type="text" class="form-control" id="cardName" name="card_name" placeholder="e.g. Pikachu" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardValue" class="form-label">Card Value</label>
+                            <input type="number" step="0.01" class="form-control" id="cardValue" name="card_value" placeholder="e.g. 10.00" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-select" name="card_type">
+                                <option value="normal">Normal</option>
+                                <option value="holographic">Holographic</option>
+                                <option value="golden">Golden</option>
+                            </select>
+                        </div>
+                        <div class="alert alert-warning mt-2" role="alert">
+                            Only add a card if you have it available in real life.
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success">Add Card</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Cards List -->
     <div class="container">

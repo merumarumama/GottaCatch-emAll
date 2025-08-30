@@ -439,40 +439,40 @@
     <div class="modal fade" id="pokemonSelectModal" tabindex="-1" aria-labelledby="pokemonSelectModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="pokemonSelectModalLabel">Select Your Pokémon</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-center mb-3">Choose a Pokémon from your collection to battle with:</p>
-                    <div class="row" id="pokemonGrid">
-                        {% for card in user_cards %}
-                        <div class="col-md-3 col-6 mb-3">
-                            <div class="card pokemon-select" data-pokemon="{{ card.name|lower }}">
-                                <img src="{{ url_for('static', filename='pokemon_images/' + card.name|lower + '.png') }}"
-                                    class="card-img-top p-3" alt="{{ card.name|capitalize }}"
-                                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='pokemon_images/unknown.png') }}';">
-                                <div class="card-body text-center">
-                                    <h6 class="card-title">{{ card.name|capitalize }}</h6>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+            <div class="modal-content" style="background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); border-radius: 16px;">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h5 class="modal-title" id="pokemonSelectModalLabel" style="color: #ffd600;">Select Your Pokémon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center mb-3">Choose a Pokémon from your collection to battle with:</p>
+                <div class="row" id="pokemonGrid">
+                {% for card in user_cards %}
+                <div class="col-md-3 col-6 mb-3">
+                    <div class="card pokemon-select" data-pokemon="{{ card.name|lower }}">
+                    <img src="https://img.pokemondb.net/artwork/avif/{{ card.name|lower }}.avif"
+                        class="card-img-top p-3" alt="{{ card.name|capitalize }}"
+                        onerror="this.onerror=null; this.src='https://img.pokemondb.net/artwork/avif/unknown.avif';">
+                    <div class="card-body text-center">
+                        <h6 class="card-title">{{ card.name|capitalize }}</h6>
                     </div>
-                    {% if not user_cards %}
-                    <p class="text-center text-muted">You don't have any Pokémon cards yet.</p>
-                    {% endif %}
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form id="startBattleForm" action="{{ url_for('start_battle') }}" method="post">
-                        <input type="hidden" name="pokemon" id="selectedPokemon">
-                        <button type="submit" class="btn btn-primary" id="startBattleBtn" disabled>
-                            <i class="fas fa-fist-raised me-2"></i>Start Battle
-                        </button>
-                    </form>
+                {% endfor %}
                 </div>
+                {% if not user_cards %}
+                <p class="text-center text-muted">You don't have any Pokémon cards yet.</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid rgba(255,255,255,0.1);">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="startBattleForm" action="{{ url_for('start_battle') }}" method="post">
+                <input type="hidden" name="pokemon" id="selectedPokemon">
+                <button type="submit" class="btn btn-primary" id="startBattleBtn" disabled>
+                    <i class="fas fa-fist-raised me-2"></i>Start Battle
+                </button>
+                </form>
+            </div>
             </div>
         </div>
     </div>
