@@ -653,14 +653,19 @@ def add_card():
     
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # Fetch the last card_id and increment by 1
+        cursor.execute("SELECT MAX(card_id) AS last_id FROM card")
+        last_id_row = cursor.fetchone()
+        next_card_id = (last_id_row['last_id'] or 0) + 1
+
         cursor.execute("""
-            INSERT INTO card (owner_id, name, value, normal, golden, holographic)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (user_id, name, value, 
+            INSERT INTO card (card_id, owner_id, name, value, normal, golden, holographic)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (next_card_id, user_id, name, value,
               1 if card_type == 'normal' else 0,
-              1 if card_type == 'golden' else 0, 
+              1 if card_type == 'golden' else 0,
               1 if card_type == 'holographic' else 0))
-        
+
         mysql.connection.commit()
         cursor.close()
         
