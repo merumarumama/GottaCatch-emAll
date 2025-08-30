@@ -349,7 +349,7 @@
                         <div class="d-grid gap-2">
                             {% for u in allusers %}
                             <form action="{{ url_for('chatbox') }}" method="get" class="mb-2">
-                                <input type="hidden" name="recipient_id" value="{{ u.id }}">
+                                <input type="hidden" name="recipient_id" value="{{ u.user_id }}">
                                 <button type="submit" class="btn btn-primary w-100 text-start p-2">
                                     <div class="card-msg mb-0">
                                         <i class="fas fa-user me-2"></i> {{ u.name }}
@@ -360,6 +360,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

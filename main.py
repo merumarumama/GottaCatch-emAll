@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import re
 from datetime import datetime, date
+from collections import defaultdict
 import random
 import time
 
@@ -490,6 +491,9 @@ def make_move():
     
     return jsonify({"success": True, "battle_over": False, "damage": damage})
 
+# in-memory messages (reset on server restart)
+live_chats = defaultdict(list)  # key: frozenset({user_id, recipient_id}), value: list of messages
+
 @app.route('/chatbox', methods=['GET', 'POST'])
 def chatbox():
     if 'user_id' not in session:
@@ -497,24 +501,107 @@ def chatbox():
         return redirect(url_for('login'))
 
     user_id = session['user_id']
-    recipient_id = request.args.get('recipient_id')
+    recipient_id = request.args.get('recipient_id', type=int)
 
-    cursor = mysql.connection.cursor()
-    user = None
-    recipient = None
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
     # Fetch current user info
     cursor.execute('SELECT * FROM Users WHERE user_id = %s', (user_id,))
     user = cursor.fetchone()
 
-    # Fetch recipient info if provided
-    if recipient_id:
+    recipient = None
+    messages = []
+    
+    if recipient_id and recipient_id != user_id:  # Prevent self-chat
+        # Fetch recipient info
         cursor.execute('SELECT * FROM Users WHERE user_id = %s', (recipient_id,))
         recipient = cursor.fetchone()
 
-    return render_template('chatbox.html', user=user, recipient=recipient)
+        if recipient:
+            # Update current user's chatuser_id and timestamp
+            cursor.execute(
+                'UPDATE Users SET chatuser_id = %s, timestamp = %s WHERE user_id = %s',
+                (recipient_id, datetime.now(), user_id)
+            )
+            mysql.connection.commit()
+
+            # Check if recipient is also chatting with current user
+            if recipient.get('chatuser_id') == user_id:  # Use .get() to avoid KeyError
+                # Both are connected → retrieve messages
+                chat_key = frozenset({user_id, recipient_id})
+                messages = live_chats.get(chat_key, [])
+    else:
+        flash("Cannot chat with yourself!", "warning")
+        return redirect(url_for('dashboard'))
+
+    # Fetch all users for sidebar (excluding current user)
+    cursor.execute('SELECT user_id, name FROM Users WHERE user_id != %s', (user_id,))
+    all_users = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template(
+        'chatbox.html',
+        user=user,
+        recipient=recipient,
+        messages=messages,
+        all_users=all_users,
+        recipient_id=recipient_id
+    )
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    sender_id = session['user_id']
+    recipient_id = request.form.get('recipient_id')
+    content = request.form['content'].strip()
+
+    # Validate input
+    if not recipient_id or not content:
+        flash("Missing recipient or message content!", "warning")
+        return redirect(url_for('chatbox'))
+    
+    try:
+        recipient_id = int(recipient_id)
+    except ValueError:
+        flash("Invalid recipient ID.", "danger")
+        return redirect(url_for('chatbox'))
+    
+    # Prevent self-messaging
+    if sender_id == recipient_id:
+        flash("Cannot message yourself!", "warning")
+        return redirect(url_for('chatbox', recipient_id=recipient_id))
+
+    # Store message in memory
+    chat_key = frozenset({sender_id, recipient_id})
+    
+    if chat_key not in live_chats:
+        live_chats[chat_key] = []
+    
+    live_chats[chat_key].append({
+        'sender_id': sender_id,
+        'content': content,
+        'timestamp': datetime.now()
+    })
+
+    return redirect(url_for('chatbox', recipient_id=recipient_id))
 
 
+@app.route('/stop_chat')
+def stop_chat():
+    """Clear current user's chat session and go back to dashboard"""
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    cursor = mysql.connection.cursor()
+    cursor.execute('UPDATE Users SET chatuser_id=NULL WHERE user_id=%s', (user_id,))
+    mysql.connection.commit()
+
+    flash("You have left the chat.", "info")
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/my_cards')
